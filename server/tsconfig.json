@@ -1,0 +1,11 @@
+{
+    "compilerOptions": {
+      "module": "NodeNext",
+      "moduleResolution": "NodeNext",
+      "baseUrl": "src",
+      "sourceMap": true,
+      "outDir": "dist",
+      "noImplicitAny": true // ensure that we never accidentally let the compiler miss type checking by inferring to any type.
+    },
+    "include": ["src/**/*"]//control over the TypeScript compilation
+  }
