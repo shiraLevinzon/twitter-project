@@ -1,9 +1,9 @@
 
 import { Request, Response } from 'express';
-import { userLogin, userRegister, userFollow, userUnfollow, userChangeRole } from './User.manager';
+import {  } from './User.manager';
 
 
-export const register = async (req: Request, res: Response) => {
+export const addUser = async (req: Request, res: Response) => {
     try{
         const response= await userRegister(req);
         return res.status(response.status).send(response.body);

@@ -1,20 +1,14 @@
 import express from 'express';
-import {
-  register,
-  login,
-  follow,
-  unfollow,
-  changeRole
-} from './User.controller'
+import * as userController from './User.controller'
 
 import auth from '../utils/auth'
 
 const userRouter = express.Router();
 
-userRouter.post("/register", register);
-userRouter.post("/login", login);
-userRouter.patch("/follow/:followId", auth, follow);
-userRouter.patch("/unfollow/:followId", auth, unfollow);
-userRouter.patch("/changeRole/:role", auth, changeRole);
+userRouter.post("/addUser", );
+userRouter.post("/login", );
+userRouter.patch("/addFollow/:followId", auth, );
+userRouter.patch("/addUnfollow/:followId", auth, );
+userRouter.patch("/updateRole/:role", auth, );
 
 export default userRouter;
