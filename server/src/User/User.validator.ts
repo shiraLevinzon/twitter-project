@@ -1,22 +1,8 @@
-import Joi from 'joi';
-import mongoose from 'mongoose';
+import { NextFunction, Request, Response } from 'express';
+const Joi= require('joi');
 
-const objectId = Joi.extend((joi) => ({
-  type: 'objectId',
-  base: joi.string(),
-  messages: {
-    'objectId.base': '{{#label}} must be a valid MongoDB ObjectID',
-  },
-  validate(value, helpers) {
-    if (!mongoose.Types.ObjectId.isValid(value)) {
-      return { value, errors: helpers.error('objectId.base') };
-    }
-  },
-}));
-
-const userJoiScheme =
-{
-  login: Joi.object().keys({
+export const loginValidate = (req: Request, res: Response, next: NextFunction): Response => {
+  const login = Joi.object().keys({
 
     email: Joi.string()
       .email({ tlds: { allow: ["com"] } })
@@ -26,9 +12,17 @@ const userJoiScheme =
       .pattern(new RegExp('^[a-zA-Z0-9]{3,30}$'))
       .required(),
 
-  }),
+  })
+  const validate = login.validate(req.body);
 
-  register: Joi.object().keys({
+  if (validate.error) return res.status(401).send(validate.error.message);
+
+  next();
+
+}
+
+export const registerValidate = (req: Request, res: Response, next: NextFunction): Response => {
+  const register = Joi.object().keys({
     userName: Joi.string()
       .min(3)
       .max(30)
@@ -58,7 +52,34 @@ const userJoiScheme =
       .items(Joi.string())
   })
 
+
+  const validate = register.validate(req.body);
+
+  if (validate.error) return res.status(401).send(validate.error.message);
+
+  next();
+
 }
 
+export const idValidate = (req: Request, res: Response, next: NextFunction): Response => {
+  const idVal = Joi.object().keys({
+    id: Joi.string().required()
+  })
+  const validate = idVal.validate(req.params);
 
-export default userJoiScheme;
+  if (validate.error) return res.status(401).send(validate.error.message);
+
+  next();
+}
+
+export const roleValidate = (req: Request, res: Response, next: NextFunction): Response=> {
+  const role = Joi.object().keys({
+    role: Joi.string().valid('manager', 'user').required()
+  })
+  const validate = role.validate(req.params);
+
+  if (validate.error) return res.status(401).send(validate.error.message);
+
+  next();
+}
+

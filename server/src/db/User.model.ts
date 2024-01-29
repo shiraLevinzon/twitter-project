@@ -1,17 +1,5 @@
-import { Schema, Document, model, Types } from "mongoose";
-
-type User = {
-  userName: string;
-  email: string;
-  password: string;
-  dateCreated?: Date;
-  image?: string;
-  loction?:string;
-  role: "manager" | "user";
-  followers: Types.ObjectId[];
-};
-
-type UserDocument = User & Document;
+import { Schema, model } from "mongoose";
+import UserDocument from '../../../types/user.type'
 
 const userSchema = new Schema<UserDocument>({
   userName: {
@@ -48,7 +36,6 @@ const userSchema = new Schema<UserDocument>({
       ref: 'User'
     }
   ]
-  
 });
 
 const User = model<UserDocument>("User", userSchema);

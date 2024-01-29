@@ -1,18 +1,12 @@
 
 import { Request, Response } from 'express';
-import {
-    userLogin,
-    userRegister,
-    userFollow,
-    userUnfollow,
-    userChangeRole,
-    UserById
-} from './User.manager';
+import * as userManager from './User.manager';
 
 
-export const register = async (req: Request, res: Response) => {
+
+export const addUser = async (req: Request, res: Response): Promise<Response> => {
     try {
-        const response = await userRegister(req);
+        const response = await userManager.addUser(req);
         return res.status(response.status).send(response.body);
     }
     catch (error) {
@@ -21,9 +15,9 @@ export const register = async (req: Request, res: Response) => {
 
 };
 
-export const login = async (req: Request, res: Response) => {
+export const addLogin = async (req: Request, res: Response): Promise<Response> => {
     try {
-        const response = await userLogin(req);
+        const response = await userManager.addLogin(req);
         return res.status(response.status).send(response.body);
     }
     catch (error) {
@@ -31,9 +25,9 @@ export const login = async (req: Request, res: Response) => {
     }
 
 };
-export const getbyId = async (req: Request, res: Response) => {
+export const getUserById = async (req: Request, res: Response): Promise<Response> => {
     try {
-        const response = await UserById(req);
+        const response = await userManager.getUserById(req.params.id);
         return res.status(response.status).send(response.body);
     }
     catch (error) {
@@ -41,9 +35,9 @@ export const getbyId = async (req: Request, res: Response) => {
     }
 
 };
-export const follow = async (req: Request, res: Response) => {
+export const updateFollow = async (req: Request, res: Response): Promise<Response> => {
     try {
-        const response = await userFollow(req, res.locals.userId);
+        const response = await userManager.updateFollow(req, res.locals.userId);
         return res.status(response.status).send(response.body);
     }
     catch (error) {
@@ -51,9 +45,9 @@ export const follow = async (req: Request, res: Response) => {
     }
 
 };
-export const unfollow = async (req: Request, res: Response) => {
+export const updateUnfollow = async (req: Request, res: Response): Promise<Response> => {
     try {
-        const response = await userUnfollow(req, res.locals.userId);
+        const response = await userManager.updateUnfollow(req, res.locals.userId);
         return res.status(response.status).send(response.body);
     }
     catch (error) {
@@ -61,9 +55,9 @@ export const unfollow = async (req: Request, res: Response) => {
     }
 
 };
-export const changeRole = async (req: Request, res: Response) => {
+export const updateRoll = async (req: Request, res: Response): Promise<Response> => {
     try {
-        const response = await userChangeRole(req, res.locals.userId);
+        const response = await userManager.updateRoll(req, res.locals.userId);
         return res.status(response.status).send(response.body);
     }
     catch (error) {

@@ -1,20 +1,10 @@
 
 import { Request, Response } from 'express';
-import {
-    tweetDelete,
-    getTweetsByDate,
-    getTweetsByLikes,
-    getTweetsByOwner,
-    tweetPost,
-    updateComments,
-    updateLikes,
-    getAllTweets,
-    TweetById
-} from './Tweet.manager'
+import * as tweetManager from './Tweet.manager'
 
-export const postTweet = async (req: Request, res: Response) => {
+export const addTweet = async (req: Request, res: Response) => {
     try {
-        const response = await tweetPost(req,  res.locals.userId);
+        const response = await tweetManager.addTweet(req,  res.locals.userId);
         return res.status(response.status).send(response.body);
     }
     catch (error) {
@@ -25,7 +15,7 @@ export const postTweet = async (req: Request, res: Response) => {
 
 export const deleteTweet = async (req: Request, res: Response) => {
     try {
-        const response = await tweetDelete(req, res.locals.userId);
+        const response = await tweetManager.deleteTweet(req, res.locals.userId);
         return res.status(response.status).send(response.body);
     }
     catch (error) {
@@ -33,11 +23,11 @@ export const deleteTweet = async (req: Request, res: Response) => {
     }
 
 };
-export const addComment = async (req: Request, res: Response) => {
+export const updateComments = async (req: Request, res: Response) => {
     try{
-        const newTweet= await tweetPost(req, res.locals.userId);//create new tweet
+        const newTweet= await tweetManager.addTweet(req, res.locals.userId);//create new tweet
 
-        const response= await updateComments(req, newTweet.body._id);// 
+        const response= await tweetManager.updateComments(req, newTweet.body._id);// 
         return res.status(response.status).send(response.body);
     }
     catch(error){
@@ -45,18 +35,18 @@ export const addComment = async (req: Request, res: Response) => {
     }
 
 };
-export const addLike = async (req: Request, res: Response) => {
+export const updateLikes = async (req: Request, res: Response) => {
     try{
-        const response= await updateLikes(req, res.locals.userId);
+        const response= await tweetManager.updateLikes(req, res.locals.userId);
         return res.status(response.status).send(response.body);
     }
     catch(error){
         return res.status(400).send(error.message);
     }
 };
-export const getAll = async (req: Request, res: Response) => {
+export const getAllTweets = async (req: Request, res: Response) => {
     try {
-        const response = await getAllTweets(req);
+        const response = await tweetManager.getAllTweets(req);
         return res.status(response.status).send(response.body);
     }
     catch (error) {
@@ -64,9 +54,9 @@ export const getAll = async (req: Request, res: Response) => {
     }
 
 };
-export const getbyId = async (req: Request, res: Response) => {
+export const getTweetById = async (req: Request, res: Response) => {
     try {
-        const response = await TweetById(req);
+        const response = await tweetManager.getTweetById(req);
         return res.status(response.status).send(response.body);
     }
     catch (error) {
@@ -74,9 +64,9 @@ export const getbyId = async (req: Request, res: Response) => {
     }
 
 };
-export const getByDate = async (req: Request, res: Response) => {
+export const getTweetsByDate = async (req: Request, res: Response) => {
     try {
-        const response = await getTweetsByDate(req);
+        const response = await tweetManager.getTweetsByDate(req);
         return res.status(response.status).send(response.body);
     }
     catch (error) {
@@ -84,9 +74,9 @@ export const getByDate = async (req: Request, res: Response) => {
     }
 
 };
-export const getByLikes = async (req: Request, res: Response) => {
+export const getTweetsByLikes = async (req: Request, res: Response) => {
     try {
-        const response = await getTweetsByLikes(req);
+        const response = await tweetManager.getTweetsByLikes(req);
         return res.status(response.status).send(response.body);
     }
     catch (error) {
@@ -94,9 +84,9 @@ export const getByLikes = async (req: Request, res: Response) => {
     }
 
 };
-export const getByOwner = async (req: Request, res: Response) => {
+export const getTweetsByOwener = async (req: Request, res: Response) => {
     try {
-        const response = await getTweetsByOwner(req);
+        const response = await tweetManager.getTweetsByOwener(req);
         return res.status(response.status).send(response.body);
     }
     catch (error) {

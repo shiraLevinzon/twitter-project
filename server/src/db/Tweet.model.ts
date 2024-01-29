@@ -1,15 +1,5 @@
-import { Schema, Document, model, Types } from "mongoose";
-
-type Tweet = {
-  text: string;
-  dateCreated?: Date;
-  image?: string;
-  comments: Types.ObjectId[];
-  tweetOwner: Types.ObjectId;
-  likes: Types.ObjectId[];
-};
-
-type TweetDocument =  Tweet  & Document;
+import { Schema, model } from "mongoose";
+import TweetDocument from '../../../types/tweet.type'
 
 const tweetSchema = new Schema<TweetDocument>({
     text: {

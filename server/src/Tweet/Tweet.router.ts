@@ -1,31 +1,19 @@
-import express from 'express';
-import {
-    deleteTweet,
-    getByDate,
-    getByLikes,
-    getByOwner,
-    postTweet,
-    addComment,
-    addLike,
-    getAll,
-    getbyId
-
-} from './Tweet.controller';
+const express= require('express');
+import * as tweetController from './Tweet.controller';
+import * as tweetValidator from './Tweet.validator';
 
 import auth from '../utils/auth'
 
 const tweetRouter = express.Router();
 
-tweetRouter.post("/", auth, postTweet);
-tweetRouter.delete("/:tweetId", auth, deleteTweet);
-tweetRouter.patch("/addLike/:fatherTweet", auth, addLike);
-tweetRouter.patch("/addComment/:fatherTweet", auth, addComment);
-tweetRouter.get("/", getAll);
-tweetRouter.get("/getById/:tweetId", getbyId);
-tweetRouter.get("/getByDate", getByDate);
-tweetRouter.get("/getByLikes", getByLikes);
-tweetRouter.get("/getByOwner", getByOwner);
-
-
+tweetRouter.post("/", auth, tweetValidator.addTweetValidate,  tweetController.addTweet);
+tweetRouter.delete("/:id", auth, tweetValidator.idValidate, tweetController.deleteTweet);
+tweetRouter.patch("/addLike/:id", auth, tweetValidator.idValidate,  tweetController.updateLikes);
+tweetRouter.patch("/addComment/:id", auth, tweetValidator.idValidate, tweetValidator.addTweetValidate, tweetController.updateComments);
+tweetRouter.get("/", tweetController.getAllTweets);
+tweetRouter.get("/getTweetById/:id", tweetValidator.idValidate, tweetController.getTweetById);
+tweetRouter.get("/getTweetsByDate", tweetController.getTweetsByDate);
+tweetRouter.get("/getTweetsByLikes", tweetController.getTweetsByLikes);
+tweetRouter.get("/getTweetsByOwener", tweetController.getTweetsByOwener);
 
 export default tweetRouter;

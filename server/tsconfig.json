@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
-      "module": "NodeNext",
-      "moduleResolution": "NodeNext",
+      "module": "CommonJS",
+      "moduleResolution": "node",
       "baseUrl": "src",
       "sourceMap": true,
       "outDir": "dist",
