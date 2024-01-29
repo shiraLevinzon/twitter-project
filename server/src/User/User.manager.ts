@@ -54,6 +54,14 @@ export const userLogin = async (req: Request) => {
     body: { currrentUser, token }
   };
 }
+export const UserById = async (req: Request,) => {
+  const { id } = req.params;
+  const user = await getUserById(id);
+  return {
+      status: 200,
+      body: user
+  }
+}
 
 export const userFollow = async (req: Request, userId: string) => {
   const {  followId } = req.params;  

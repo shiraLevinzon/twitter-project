@@ -6,7 +6,9 @@ import {
     getByOwner,
     postTweet,
     addComment,
-    addLike
+    addLike,
+    getAll,
+    getbyId
 
 } from './Tweet.controller';
 
@@ -16,8 +18,10 @@ const tweetRouter = express.Router();
 
 tweetRouter.post("/", auth, postTweet);
 tweetRouter.delete("/:tweetId", auth, deleteTweet);
-tweetRouter.patch("/addLike", auth, addLike);
-tweetRouter.patch("/addComment", auth, addComment);
+tweetRouter.patch("/addLike/:fatherTweet", auth, addLike);
+tweetRouter.patch("/addComment/:fatherTweet", auth, addComment);
+tweetRouter.get("/", getAll);
+tweetRouter.get("/getById/:tweetId", getbyId);
 tweetRouter.get("/getByDate", getByDate);
 tweetRouter.get("/getByLikes", getByLikes);
 tweetRouter.get("/getByOwner", getByOwner);
