@@ -7,7 +7,9 @@ import {
     getTweetsByOwner,
     tweetPost,
     updateComments,
-    updateLikes
+    updateLikes,
+    getAllTweets,
+    TweetById
 } from './Tweet.manager'
 
 export const postTweet = async (req: Request, res: Response) => {
@@ -33,10 +35,10 @@ export const deleteTweet = async (req: Request, res: Response) => {
 };
 export const addComment = async (req: Request, res: Response) => {
     try{
-        const newTweet= await tweetPost(req, res.locals.userId)
+        const newTweet= await tweetPost(req, res.locals.userId);//create new tweet
 
-        const response= await updateComments(req,newTweet.body._id);
-        //return res.status(response.status).send(response.body);
+        const response= await updateComments(req, newTweet.body._id);// 
+        return res.status(response.status).send(response.body);
     }
     catch(error){
         return res.status(400).send(error.message);
@@ -44,7 +46,33 @@ export const addComment = async (req: Request, res: Response) => {
 
 };
 export const addLike = async (req: Request, res: Response) => {
-    
+    try{
+        const response= await updateLikes(req, res.locals.userId);
+        return res.status(response.status).send(response.body);
+    }
+    catch(error){
+        return res.status(400).send(error.message);
+    }
+};
+export const getAll = async (req: Request, res: Response) => {
+    try {
+        const response = await getAllTweets(req);
+        return res.status(response.status).send(response.body);
+    }
+    catch (error) {
+        return res.status(400).send(error.message);
+    }
+
+};
+export const getbyId = async (req: Request, res: Response) => {
+    try {
+        const response = await TweetById(req);
+        return res.status(response.status).send(response.body);
+    }
+    catch (error) {
+        return res.status(400).send(error.message);
+    }
+
 };
 export const getByDate = async (req: Request, res: Response) => {
     try {
