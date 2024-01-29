@@ -7,7 +7,8 @@ import {
     getTweetByOwener,
     getTweets,
     postTweet,
-    updateComment
+    updateComment,
+    updateLike
 } from './Tweet.repository'
 import { getUserById } from '../User/User.repository'
 import tweetJoiScheme from "./Tweet.validator";
@@ -32,8 +33,14 @@ export const tweetDelete = async (req: Request, userId: string) => {
 
     const user = await getUserById(userId);
     const tweet = await getTweetById(tweetId);
-    if (user.role !== "manager" && tweet.tweetOwner.toString() !== userId)
-        throw new Error("This user have no permission to delete this tweet");
+    const owner = await getUserById(tweet.tweetOwner.toString())
+
+    if (user.role === "user" && tweet.tweetOwner.toString() !== userId)
+        throw new Error("user cant delete another user tweet");
+
+    if (user.role === 'manager' && owner.role === 'manager')
+        throw new Error("manager cant delete another manager tweet");
+
 
     const deletedTweet = await deleteTweet(tweetId);
     return {
@@ -46,11 +53,39 @@ export const tweetDelete = async (req: Request, userId: string) => {
 export const updateComments = async (req: Request, newTweetId: string) => {
     const { fatherTweet } = req.params;
     const res = await updateComment(fatherTweet, newTweetId);
-    
+    return {
+        status: 200,
+        body: res
+    }
+
 }
 export const updateLikes = async (req: Request, userId: string) => {
+    const { fatherTweet } = req.params;
+    const res = await updateLike(fatherTweet, userId);
+    return {
+        status: 200,
+        body: res
+    }
 
+}
+export const getAllTweets = async (req: Request) => {
+    const search = req.query.s as string;
+    let query = {};
+    search ? query = { text: { $regex: search, $options: 'i' } } : query = {};
 
+    const tweets = await getTweets(query);
+    return {
+        status: 200,
+        body: tweets
+    }
+}
+export const TweetById = async (req: Request,) => {
+    const { tweetId } = req.params;
+    const tweet = await getTweetById(tweetId);
+    return {
+        status: 200,
+        body: tweet
+    }
 }
 export const getTweetsByDate = async (req: Request) => {
     const date = req.query.date as string;
