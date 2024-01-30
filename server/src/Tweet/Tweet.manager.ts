@@ -3,6 +3,8 @@ import * as tweetRepository from './Tweet.repository'
 import { getUserById } from '../User/User.manager'
 import mongoose from "mongoose";
 const _ = require('lodash');
+import response from '../../../types/response.type';
+
 
 
 export const addTweet = async (req: Request, userId: string) => {
@@ -12,6 +14,7 @@ export const addTweet = async (req: Request, userId: string) => {
         tweetOwner: userId
     }
     const newTweet = await tweetRepository.addTweet(updateUser)
+
     return {
         status: 201,
         body: newTweet
@@ -77,6 +80,15 @@ export const updateComments = async (req: Request, newTweetId: string) => {
 export const updateLikes = async (req: Request, userId: string) => {
     const fatherTweet = req.params.id;
     const res = await tweetRepository.updateLikes(fatherTweet, userId);
+    return {
+        status: 200,
+        body: res
+    }
+
+}
+export const updateDislikes = async (req: Request, userId: string) => {
+    const fatherTweet = req.params.id;
+    const res = await tweetRepository.updateDislikes(fatherTweet, userId);
     return {
         status: 200,
         body: res

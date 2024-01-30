@@ -16,9 +16,7 @@ export const updateFollow = async (userId: string, newFollow: string) => {
   );
   return update;
 }
-export const updateUnfollow = async (userId: string, newUnfollow: string) => {
-  console.log(newUnfollow);
-  
+export const updateUnfollow = async (userId: string, newUnfollow: string) => {  
   const update = await User.updateOne({ _id: userId, followers: { $in: [newUnfollow] }  }, { $pull: { followers: newUnfollow } })
   return update;
 }
