@@ -1,7 +1,5 @@
 import Tweet from "../db/Tweet.model";
 import TweetDocument from "../../../types/tweet.type";
-import { UpdateWriteOpResult }  from "mongoose";
-
 
 export const getAllTweets = async (query: Object): Promise<Array<TweetDocument>> => await Tweet.find(query);
 export const getTweetById = async (id: string): Promise<TweetDocument> => await Tweet.findOne({ _id: id });

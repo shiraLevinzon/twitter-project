@@ -2,10 +2,7 @@ import { Request, Response } from "express";
 import * as tweetRepository from './Tweet.repository'
 import { getUserById } from '../User/User.manager'
 import mongoose from "mongoose";
-const _ = require('lodash');
-import response from '../../../types/response.type';
-
-
+import map from 'lodash/map';
 
 export const addTweet = async (req: Request, userId: string) => {
     const { body } = req;
@@ -21,24 +18,22 @@ export const addTweet = async (req: Request, userId: string) => {
     };
 }
 const deleteAll = async (id: string) => {
-    const tweet = await tweetRepository.getTweetById(id)
-
-    _.forEach(tweet.comments, (commentId: string) => {
-        deleteAll(commentId);
+    const {comments, _id} = await tweetRepository.getTweetById(id)
+    map(comments, (commentId: string) => {
+        deleteAll(commentId)
     });
-
-    await tweetRepository.deleteTweet(tweet._id)
+    await tweetRepository.deleteTweet(_id)
 }
 
 export const deleteTweet = async (req: Request, userId: string) => {
-    const  tweetId  = req.params.id;
+    const  {id: tweetId}  = req.params;
 
-    const user = await getUserById(userId);
-    const tweet = await tweetRepository.getTweetById(tweetId);
-    const owner = await getUserById(tweet.tweetOwner.toString())
+    const {role : userRole } = (await getUserById(userId)).body;
+    const {tweetOwner} = await tweetRepository.getTweetById(tweetId);
+    const {role: ownerRole} = (await getUserById(tweetOwner.toString())).body;
 
-    const deleteByUser = user.body.role === "user" && tweet.tweetOwner.toString() !== userId;
-    const deleteByManager = user.body.role === 'manager' && owner.body.role === 'manager';
+    const deleteByUser = userRole === "user" && tweetOwner.toString() !== userId;
+    const deleteByManager = userRole === 'manager' && ownerRole === 'manager';
 
     if (deleteByUser)
         throw new Error("user cant delete another user tweet");
@@ -69,7 +64,7 @@ export const deleteTweet = async (req: Request, userId: string) => {
     }
 }
 export const updateComments = async (req: Request, newTweetId: string) => {
-    const fatherTweet  = req.params.id;
+    const {id: fatherTweet}  = req.params;
     const res = await tweetRepository.updateComments(fatherTweet, newTweetId);
     return {
         status: 200,
@@ -78,7 +73,7 @@ export const updateComments = async (req: Request, newTweetId: string) => {
 
 }
 export const updateLikes = async (req: Request, userId: string) => {
-    const fatherTweet = req.params.id;
+    const {id: fatherTweet}  = req.params;
     const res = await tweetRepository.updateLikes(fatherTweet, userId);
     return {
         status: 200,
@@ -87,7 +82,7 @@ export const updateLikes = async (req: Request, userId: string) => {
 
 }
 export const updateDislikes = async (req: Request, userId: string) => {
-    const fatherTweet = req.params.id;
+    const {id: fatherTweet}  = req.params;
     const res = await tweetRepository.updateDislikes(fatherTweet, userId);
     return {
         status: 200,
@@ -96,7 +91,7 @@ export const updateDislikes = async (req: Request, userId: string) => {
 
 }
 export const getAllTweets = async (req: Request) => {
-    const search = req.query.s
+    const {s: search} = req.query;
     let query = {};
     search ? query = { text: { $regex: search, $options: 'i' } } : query = {};
 
@@ -107,7 +102,7 @@ export const getAllTweets = async (req: Request) => {
     }
 }
 export const getTweetById = async (req: Request,) => {
-    const tweetId = req.params.id;
+    const {id: tweetId} = req.params;
     const tweet = await tweetRepository.getTweetById(tweetId);
     return {
         status: 200,
@@ -115,7 +110,7 @@ export const getTweetById = async (req: Request,) => {
     }
 }
 export const getTweetsByDate = async (req: Request) => {
-    const date = req.query.date;
+    const {date} = req.query;
     const tweets = await tweetRepository.getTweetsByDate(new Date(date.toString()));
     return {
         status: 200,
@@ -123,7 +118,7 @@ export const getTweetsByDate = async (req: Request) => {
     }
 }
 export const getTweetsByLikes = async (req: Request) => {
-    const amountStr = req.query.amount;
+    const {a: amountStr} = req.query;
     const amount = +amountStr;
     if (isNaN(amount)) throw new Error('Invalid amount');
 
@@ -135,7 +130,7 @@ export const getTweetsByLikes = async (req: Request) => {
 
 };
 export const getTweetsByOwener = async (req: Request) => {
-    const owner = req.query.owner;
+    const {owner} = req.query;
     const tweets = await tweetRepository.getTweetsByOwener(owner.toString());
     return {
         status: 200,

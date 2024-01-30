@@ -12,7 +12,7 @@ const checkIfUserExists = async (email: string): Promise<UserDocument> => {
   return null;
 };
 
-export const addUser = async (req: Request) : Promise<response>=> {
+export const addUser = async (req: Request): Promise<response> => {
   const { body } = req;
   if (await checkIfUserExists(body.email)) {
     throw new Error("Already in the system");
@@ -37,13 +37,13 @@ export const addLogin = async (req: Request): Promise<response> => {
   const currrentUser = await checkIfUserExists(body.email)
   if (!currrentUser || (!(await bcrypt.compare(body.password, currrentUser.password)))) throw new Error('email or password isnt valid')
 
-  const token =await generateToken(currrentUser);  
+  const token = await generateToken(currrentUser._id);
   return {
     status: 201,
     body: { currrentUser, token }
   };
 }
-export const getUserById = async (id:string) => {
+export const getUserById = async (id: string) => {
   const user = await userRepository.getUserById(id);
   return {
     status: 200,
@@ -51,8 +51,8 @@ export const getUserById = async (id:string) => {
   }
 }
 
-export const updateFollow = async (req: Request, userId: string) : Promise<response>=> {
-  const followId: string = req.params.id;
+export const updateFollow = async (req: Request, userId: string): Promise<response> => {
+  const { id: followId } = req.params;
   if (!(await userRepository.getUserById(followId))) throw new Error('this user isnt exist');
   const updateUser = await userRepository.updateFollow(userId, followId)
   return {
@@ -61,8 +61,8 @@ export const updateFollow = async (req: Request, userId: string) : Promise<respo
   };
 
 }
-export const updateUnfollow = async (req: Request, userId: string) : Promise<response> => {
-  const followId: string = req.params.id;
+export const updateUnfollow = async (req: Request, userId: string): Promise<response> => {
+  const { id: followId } = req.params;
   if (!(await userRepository.getUserById(followId))) throw new Error('this user isnt exist');
   const updateUser = await userRepository.updateUnfollow(userId, followId)
   return {
@@ -71,8 +71,8 @@ export const updateUnfollow = async (req: Request, userId: string) : Promise<res
   };
 
 };
-export const updateRoll = async (req: Request, userId: string) : Promise<response>=> {
-  const role: string = req.params.role;  
+export const updateRoll = async (req: Request, userId: string): Promise<response> => {
+  const { role } = req.params;
   const updateUser = await userRepository.updateRoll(userId, role);
   return {
     status: 200,

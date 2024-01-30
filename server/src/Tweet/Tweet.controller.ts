@@ -1,4 +1,3 @@
-
 import { Request, Response } from 'express';
 import * as tweetManager from './Tweet.manager'
 import response from '../../../types/response.type';

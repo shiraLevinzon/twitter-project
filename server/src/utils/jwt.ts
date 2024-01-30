@@ -1,22 +1,23 @@
-const dotenv = require('dotenv');
-const jwt = require('jsonwebtoken');
+import dotenv from 'dotenv';
+//import jwt from 'jsonwebtoken';
+const jwt= require('jsonwebtoken');
 dotenv.config();
 import UserDocument from "../../../types/user.type";
 
-export const generateToken = async (payload: UserDocument): Promise<string> => {
+export const generateToken = async (userId: string): Promise<string> => {
     try {
-        const token = await jwt.sign({ ...payload }, process.env.JWT_SECRET_CODE, { expiresIn: process.env.JWT_EXPIRES_IN });
+        const token = await jwt.sign({userId}, process.env.JWT_SECRET_CODE, { expiresIn: process.env.JWT_EXPIRES_IN });
         return token;
     }
     catch (error) {
         throw new Error(error.message)
     }
 }
-
-export const decodeToken = async (token: string): Promise<UserDocument> => {
+// : Promise<UserDocument> 
+export const decodeToken = async (token: string)=> {
     try {
-        const payload = await jwt.verify(token, process.env.JWT_SECRET_CODE)
-        return payload._doc;
+        const payload = await jwt.verify(token, process.env.JWT_SECRET_CODE);
+        return payload.userId;
     }
     catch (error) {
         throw new Error(error.message)

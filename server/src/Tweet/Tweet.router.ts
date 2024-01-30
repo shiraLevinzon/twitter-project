@@ -1,4 +1,4 @@
-const express= require('express');
+import express from 'express';
 import * as tweetController from './Tweet.controller';
 import * as tweetValidator from './Tweet.validator';
 

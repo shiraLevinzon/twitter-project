@@ -1,5 +1,4 @@
-const express= require('express')
-
+import express from 'express';
 import * as userController from './User.controller'
 import * as userValidator from './User.validator'
 

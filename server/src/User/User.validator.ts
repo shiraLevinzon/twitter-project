@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-const Joi= require('joi');
+import Joi from 'joi';
 
 export const loginValidate = (req: Request, res: Response, next: NextFunction): Response => {
   const login = Joi.object().keys({
