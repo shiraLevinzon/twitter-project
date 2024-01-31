@@ -19,7 +19,6 @@ export const addUser = async (req: Request): Promise<response> => {
   }
 
   const hash = await bcrypt.hash(body.password, 10);
-
   const updateUser = {
     ...body,
     password: hash

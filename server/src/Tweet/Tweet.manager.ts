@@ -3,8 +3,9 @@ import * as tweetRepository from './Tweet.repository'
 import { getUserById } from '../User/User.manager'
 import mongoose from "mongoose";
 import map from 'lodash/map';
+import response from "../../../types/response.type";
 
-export const addTweet = async (req: Request, userId: string) => {
+export const addTweet = async (req: Request, userId: string) : Promise<response>=> {
     const { body } = req;
     const updateUser = {
         ...body,
@@ -17,7 +18,7 @@ export const addTweet = async (req: Request, userId: string) => {
         body: newTweet
     };
 }
-const deleteAll = async (id: string) => {
+const deleteAll = async (id: string)  : Promise<void> => {
     const {comments, _id} = await tweetRepository.getTweetById(id)
     map(comments, (commentId: string) => {
         deleteAll(commentId)
@@ -25,7 +26,7 @@ const deleteAll = async (id: string) => {
     await tweetRepository.deleteTweet(_id)
 }
 
-export const deleteTweet = async (req: Request, userId: string) => {
+export const deleteTweet = async (req: Request, userId: string)  : Promise<response> => {
     const  {id: tweetId}  = req.params;
 
     const {role : userRole } = (await getUserById(userId)).body;
@@ -46,12 +47,12 @@ export const deleteTweet = async (req: Request, userId: string) => {
     session.startTransaction();
 
     try {
-        const deletedTweet = await deleteAll(tweetId);
+        await deleteAll(tweetId);
         await session.commitTransaction();
         session.endSession();
         return {
             status: 200,
-            body: deletedTweet
+            body: {message: "all tweets deleted sucssesfuly"}
         };
     }
     catch (error) {
@@ -63,7 +64,7 @@ export const deleteTweet = async (req: Request, userId: string) => {
         };
     }
 }
-export const updateComments = async (req: Request, newTweetId: string) => {
+export const updateComments = async (req: Request, newTweetId: string) : Promise<response> => {
     const {id: fatherTweet}  = req.params;
     const res = await tweetRepository.updateComments(fatherTweet, newTweetId);
     return {
@@ -72,7 +73,7 @@ export const updateComments = async (req: Request, newTweetId: string) => {
     }
 
 }
-export const updateLikes = async (req: Request, userId: string) => {
+export const updateLikes = async (req: Request, userId: string) : Promise<response> => {
     const {id: fatherTweet}  = req.params;
     const res = await tweetRepository.updateLikes(fatherTweet, userId);
     return {
@@ -81,7 +82,7 @@ export const updateLikes = async (req: Request, userId: string) => {
     }
 
 }
-export const updateDislikes = async (req: Request, userId: string) => {
+export const updateDislikes = async (req: Request, userId: string) : Promise<response> => {
     const {id: fatherTweet}  = req.params;
     const res = await tweetRepository.updateDislikes(fatherTweet, userId);
     return {
@@ -90,7 +91,7 @@ export const updateDislikes = async (req: Request, userId: string) => {
     }
 
 }
-export const getAllTweets = async (req: Request) => {
+export const getAllTweets = async (req: Request) : Promise<response> => {
     const {s: search} = req.query;
     let query = {};
     search ? query = { text: { $regex: search, $options: 'i' } } : query = {};
@@ -101,7 +102,7 @@ export const getAllTweets = async (req: Request) => {
         body: tweets
     }
 }
-export const getTweetById = async (req: Request,) => {
+export const getTweetById = async (req: Request) : Promise<response> => {
     const {id: tweetId} = req.params;
     const tweet = await tweetRepository.getTweetById(tweetId);
     return {
@@ -109,7 +110,7 @@ export const getTweetById = async (req: Request,) => {
         body: tweet
     }
 }
-export const getTweetsByDate = async (req: Request) => {
+export const getTweetsByDate = async (req: Request) : Promise<response> => {
     const {date} = req.query;
     const tweets = await tweetRepository.getTweetsByDate(new Date(date.toString()));
     return {
@@ -117,7 +118,7 @@ export const getTweetsByDate = async (req: Request) => {
         body: tweets
     }
 }
-export const getTweetsByLikes = async (req: Request) => {
+export const getTweetsByLikes = async (req: Request) : Promise<response> => {
     const {a: amountStr} = req.query;
     const amount = +amountStr;
     if (isNaN(amount)) throw new Error('Invalid amount');
@@ -129,7 +130,7 @@ export const getTweetsByLikes = async (req: Request) => {
     }
 
 };
-export const getTweetsByOwener = async (req: Request) => {
+export const getTweetsByOwener = async (req: Request) : Promise<response> => {
     const {owner} = req.query;
     const tweets = await tweetRepository.getTweetsByOwener(owner.toString());
     return {
