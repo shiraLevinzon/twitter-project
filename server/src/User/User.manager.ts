@@ -2,8 +2,8 @@ import { Request } from "express";
 import * as userRepository from "./User.repository";
 import { generateToken } from '../utils/jwt'
 import UserDocument from "../../../types/user.type";
-const bcrypt = require("bcrypt")
 import response from '../../../types/response.type'
+import bcrypt from 'bcrypt';
 
 
 const checkIfUserExists = async (email: string): Promise<UserDocument> => {
@@ -19,6 +19,7 @@ export const addUser = async (req: Request): Promise<response> => {
   }
 
   const hash = await bcrypt.hash(body.password, 10);
+
   const updateUser = {
     ...body,
     password: hash

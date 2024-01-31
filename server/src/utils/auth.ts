@@ -6,16 +6,12 @@ const auth = async (req: Request, res: Response, next: NextFunction): Promise<Re
 
     const bearerToken: string = req.headers["authorization"];
     if (!bearerToken) return res.status(401).send("provide token");
-    try {
-        const token = split(bearerToken, " ")[1];
-        const payload = await decodeToken(token)
-        res.locals.users = payload;
-        next();
-    }
-    catch (error) {
-        next(error)
-    }
-
+    const token = split(bearerToken, " ")[1];
+    const payload = await decodeToken(token).catch(err => {
+        return err.message;
+    })
+    res.locals.userId = payload;
+    next();
 }
 
 export default auth;
