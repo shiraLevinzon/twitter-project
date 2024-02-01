@@ -5,7 +5,7 @@ dotenv.config();
 
 export const generateToken = async (userId: string): Promise<string> => {
     try {
-        const token = await jwt.sign({userId}, process.env.JWT_SECRET_CODE, { expiresIn: process.env.JWT_EXPIRES_IN })
+        const token :string  = await jwt.sign({userId}, process.env.JWT_SECRET_CODE, { expiresIn: process.env.JWT_EXPIRES_IN })
         // .catch((error: Error)=>{
         //     throw new Error(error.message)
         // })

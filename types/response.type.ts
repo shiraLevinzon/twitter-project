@@ -4,7 +4,7 @@ import { Types } from "mongoose";
 
 type response = {
     status: number;
-    body: {_id?: Types.ObjectId;} | UserDocument | TweetDocument | object;
+    body:  UserDocument | TweetDocument ;
   };
 
   export default response;

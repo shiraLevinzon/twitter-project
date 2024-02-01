@@ -2,7 +2,6 @@ import { Request } from "express";
 import * as userRepository from "./User.repository";
 import { generateToken } from '../utils/jwt'
 import UserDocument from "../../../types/user.type";
-import response from '../../../types/response.type'
 import bcrypt from 'bcrypt';
 
 
@@ -12,7 +11,7 @@ const checkIfUserExists = async (email: string): Promise<UserDocument> => {
   return null;
 };
 
-export const addUser = async (req: Request): Promise<response> => {
+export const addUser = async (req: Request): Promise<{status: number, body: UserDocument}> => {
   const { body } = req;
   if (await checkIfUserExists(body.email)) {
     throw new Error("Already in the system");
@@ -32,7 +31,7 @@ export const addUser = async (req: Request): Promise<response> => {
 
 }
 
-export const addLogin = async (req: Request): Promise<response> => {
+export const addLogin = async (req: Request): Promise<{status: number, body: {user: UserDocument, token: string}}> => {
   const { body } = req;
   const currrentUser = await checkIfUserExists(body.email)
   if (!currrentUser || (!(await bcrypt.compare(body.password, currrentUser.password)))) throw new Error('email or password isnt valid')
@@ -40,10 +39,10 @@ export const addLogin = async (req: Request): Promise<response> => {
   const token = await generateToken(currrentUser._id);
   return {
     status: 201,
-    body: { currrentUser, token }
+    body: { user: currrentUser, token: token }
   };
 }
-export const getUserById = async (id: string) => {
+export const getUserById = async (id: string) : Promise<{status: number, body: UserDocument}>=> {
   const user = await userRepository.getUserById(id);
   return {
     status: 200,
@@ -51,7 +50,7 @@ export const getUserById = async (id: string) => {
   }
 }
 
-export const updateFollow = async (req: Request, userId: string): Promise<response> => {
+export const updateFollow = async (req: Request, userId: string): Promise<{status: number, body: UserDocument}> => {
   const { id: followId } = req.params;
   if (!(await userRepository.getUserById(followId))) throw new Error('this user isnt exist');
   const updateUser = await userRepository.updateFollow(userId, followId)
@@ -61,7 +60,7 @@ export const updateFollow = async (req: Request, userId: string): Promise<respon
   };
 
 }
-export const updateUnfollow = async (req: Request, userId: string): Promise<response> => {
+export const updateUnfollow = async (req: Request, userId: string):Promise<{status: number, body: UserDocument}> => {
   const { id: followId } = req.params;
   if (!(await userRepository.getUserById(followId))) throw new Error('this user isnt exist');
   const updateUser = await userRepository.updateUnfollow(userId, followId)
@@ -71,7 +70,7 @@ export const updateUnfollow = async (req: Request, userId: string): Promise<resp
   };
 
 };
-export const updateRoll = async (req: Request, userId: string): Promise<response> => {
+export const updateRoll = async (req: Request, userId: string): Promise<{status: number, body: UserDocument}> => {
   const { role } = req.params;
   const updateUser = await userRepository.updateRoll(userId, role);
   return {
