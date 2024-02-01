@@ -1,6 +1,7 @@
 import { Document, Types } from "mongoose";
 
 type User = {
+  _id?:Types.ObjectId;
   userName: string;
   email: string;
   password: string;

@@ -1,10 +1,10 @@
-import express from 'express';
+import express , {Router} from 'express';
 import * as tweetController from './Tweet.controller';
 import * as tweetValidator from './Tweet.validator';
 
 import auth from '../utils/auth'
 
-const tweetRouter = express.Router();
+const tweetRouter : Router = express.Router();
 
 tweetRouter.post("/", auth, tweetValidator.addTweetValidate,  tweetController.addTweet);
 tweetRouter.delete("/:id", auth, tweetValidator.idValidate, tweetController.deleteTweet);

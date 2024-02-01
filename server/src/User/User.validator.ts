@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
-import Joi from 'joi';
+import Joi , {ObjectSchema, ValidationResult} from 'joi';
 
 export const loginValidate = (req: Request, res: Response, next: NextFunction): Response => {
-  const login = Joi.object().keys({
+  const login : ObjectSchema= Joi.object().keys({
 
     email: Joi.string()
       .email({ tlds: { allow: ["com"] } })
@@ -13,7 +13,7 @@ export const loginValidate = (req: Request, res: Response, next: NextFunction): 
       .required(),
 
   })
-  const validate = login.validate(req.body);
+  const validate : ValidationResult = login.validate(req.body);
 
   if (validate.error) return res.status(401).send(validate.error.message);
 
@@ -22,7 +22,7 @@ export const loginValidate = (req: Request, res: Response, next: NextFunction): 
 }
 
 export const registerValidate = (req: Request, res: Response, next: NextFunction): Response => {
-  const register = Joi.object().keys({
+  const register : ObjectSchema = Joi.object().keys({
     userName: Joi.string()
       .min(3)
       .max(30)
@@ -53,7 +53,7 @@ export const registerValidate = (req: Request, res: Response, next: NextFunction
   })
 
 
-  const validate = register.validate(req.body);
+  const validate  : ValidationResult = register.validate(req.body);
 
   if (validate.error) return res.status(401).send(validate.error.message);
 
@@ -62,10 +62,10 @@ export const registerValidate = (req: Request, res: Response, next: NextFunction
 }
 
 export const idValidate = (req: Request, res: Response, next: NextFunction): Response => {
-  const idVal = Joi.object().keys({
+  const idVal : ObjectSchema = Joi.object().keys({
     id: Joi.string().required()
   })
-  const validate = idVal.validate(req.params);
+  const validate  : ValidationResult = idVal.validate(req.params);
 
   if (validate.error) return res.status(401).send(validate.error.message);
 
@@ -73,10 +73,10 @@ export const idValidate = (req: Request, res: Response, next: NextFunction): Res
 }
 
 export const roleValidate = (req: Request, res: Response, next: NextFunction): Response=> {
-  const role = Joi.object().keys({
+  const role : ObjectSchema = Joi.object().keys({
     role: Joi.string().valid('manager', 'user').required()
   })
-  const validate = role.validate(req.params);
+  const validate  : ValidationResult = role.validate(req.params);
 
   if (validate.error) return res.status(401).send(validate.error.message);
 

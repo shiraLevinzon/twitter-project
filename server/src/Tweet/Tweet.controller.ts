@@ -1,11 +1,12 @@
 import { Request, Response } from 'express';
 import * as tweetManager from './Tweet.manager'
-import response from '../../../types/response.type';
+import TweetDocument from '../../../types/tweet.type';
+import { DocTweetResponse,DocArrTweetResponse, DeleteResponse, DocResponse} from '../../../types/response.type'
 
 
-export const addTweet = async (req: Request, res: Response)  : Promise<Response>=> {
-    const { status, body } = await tweetManager.addTweet(req, res.locals.userId)
-        .catch((error) => {
+export const addTweet = async (req: Request, res: Response) : Promise<Response>=> {
+    const { status , body } : DocResponse = await tweetManager.addTweet(req, res.locals.userId)
+        .catch((error : Error) => {
             return { status: 400, body: error.message }
 
         });
@@ -13,8 +14,8 @@ export const addTweet = async (req: Request, res: Response)  : Promise<Response>
 };
 
 export const deleteTweet = async (req: Request, res: Response) : Promise<Response> => {
-    const { status, body } = await tweetManager.deleteTweet(req, res.locals.userId)
-        .catch((error) => {
+    const { status, body } : DeleteResponse = await tweetManager.deleteTweet(req, res.locals.userId)
+        .catch((error : Error) => {
             return { status: 400, body: error.message }
 
         });
@@ -22,10 +23,9 @@ export const deleteTweet = async (req: Request, res: Response) : Promise<Respons
 };
 
 export const updateComments = async (req: Request, res: Response) : Promise<Response> => {
-    const newTweet = await tweetManager.addTweet(req, res.locals.userId);
-        
-    const { status, body } = await tweetManager.updateComments(req, newTweet.body._id)
-        .catch((error) => {
+    const newTweet : DocTweetResponse = await tweetManager.addTweet(req, res.locals.userId)
+    const { status, body } : DocResponse= await tweetManager.updateComments(req, newTweet.body._id)
+        .catch((error : Error) => {
             return { status: 400, body: error.message }
 
         });
@@ -33,8 +33,8 @@ export const updateComments = async (req: Request, res: Response) : Promise<Resp
 
 };
 export const updateLikes = async (req: Request, res: Response) : Promise<Response> => {
-    const { status, body } = await tweetManager.updateLikes(req, res.locals.userId)
-        .catch((error) => {
+    const { status, body } : DocResponse= await tweetManager.updateLikes(req, res.locals.userId)
+        .catch((error : Error) => {
             return { status: 400, body: error.message }
 
         });
@@ -43,16 +43,16 @@ export const updateLikes = async (req: Request, res: Response) : Promise<Respons
 };
 export const updateDislikes = async (req: Request, res: Response) : Promise<Response> => {
 
-    const { status, body } = await tweetManager.updateDislikes(req, res.locals.userId)
-        .catch((error) => {
+    const { status, body } :DocResponse = await tweetManager.updateDislikes(req, res.locals.userId)
+        .catch((error : Error) => {
             return { status: 400, body: error.message }
 
         });
     return res.status(status).send(body);
 };
 export const getAllTweets = async (req: Request, res: Response) : Promise<Response> => {
-    const { status, body } = await tweetManager.getAllTweets(req)
-        .catch((error) => {
+    const { status, body } : DocResponse= await tweetManager.getAllTweets(req)
+        .catch((error : Error) => {
             return { status: 400, body: error.message }
 
         });
@@ -61,8 +61,8 @@ export const getAllTweets = async (req: Request, res: Response) : Promise<Respon
 };
 export const getTweetById = async (req: Request, res: Response) : Promise<Response> => {
 
-    const { status, body } = await tweetManager.getTweetById(req)
-        .catch((error) => {
+    const { status, body } : DocResponse = await tweetManager.getTweetById(req)
+        .catch((error : Error) => {
             return { status: 400, body: error.message }
 
         });
@@ -71,28 +71,28 @@ export const getTweetById = async (req: Request, res: Response) : Promise<Respon
 };
 export const getTweetsByDate = async (req: Request, res: Response) : Promise<Response> => {
 
-    const { status, body } = await tweetManager.getTweetsByDate(req)
-        .catch((error) => {
+    const { status, body } :DocResponse= await tweetManager.getTweetsByDate(req)
+        .catch((error : Error) => {
             return { status: 400, body: error.message }
 
         });
     return res.status(status).send(body);
 
 };
-export const getTweetsByLikes = async (req: Request, res: Response) : Promise<Response> => {
+export const getTweetsByLikes  = async (req: Request, res: Response) : Promise<Response> => {
 
-    const response = await tweetManager.getTweetsByLikes(req)
-        .catch((error) => {
+    const { status, body } : DocResponse = await tweetManager.getTweetsByLikes(req)
+        .catch((error : Error) => {
             return { status: 400, body: error.message }
         });
-    return res.status(response.status).send(response.body);
+    return res.status(status).send(body);
 
 };
 export const getTweetsByOwener = async (req: Request, res: Response) : Promise<Response> => {
-    const response = await tweetManager.getTweetsByOwener(req)
-        .catch((error) => {
+    const  { status, body } : DocResponse = await tweetManager.getTweetsByOwener(req)
+        .catch((error : Error) => {
             return { status: 400, body: error.message }
         });
-    return res.status(response.status).send(response.body);
+    return res.status(status).send(body);
 
 };

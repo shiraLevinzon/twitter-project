@@ -1,11 +1,35 @@
 import UserDocument from "./user.type";
 import TweetDocument from "./tweet.type";
-import { Types } from "mongoose";
 
-type response = {
-    status: number;
-    body:  UserDocument | TweetDocument ;
-  };
+export type DocResponse = {
+  status: number;
+  body: TweetDocument | UserDocument |  string | Array<TweetDocument> | Array<UserDocument>;
+};
 
-  export default response;
-  
+export type LoginDocResponse = {
+  status: number;
+  body: { user: UserDocument, token: string } | string;
+};
+
+export type DocUserResponse = {
+  status: number;
+  body: UserDocument;
+};
+
+export type DocTweetResponse = {
+  status: number;
+  body: TweetDocument;
+};
+
+export type DocArrTweetResponse = {
+  status: number;
+  body: Array<TweetDocument> ;
+};
+
+export type DeleteResponse = {
+  status: number;
+  body: string;
+};
+
+
+

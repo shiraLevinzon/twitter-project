@@ -3,12 +3,9 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 
 dotenv.config();
 
-export const generateToken = async (userId: string): Promise<string> => {
+export const generateToken = (userId: string): string => {
     try {
-        const token :string  = await jwt.sign({userId}, process.env.JWT_SECRET_CODE, { expiresIn: process.env.JWT_EXPIRES_IN })
-        // .catch((error: Error)=>{
-        //     throw new Error(error.message)
-        // })
+        const token :string  =  jwt.sign({userId}, process.env.JWT_SECRET_CODE, { expiresIn: process.env.JWT_EXPIRES_IN })
         return token;
     }
     catch (error) {
@@ -16,16 +13,10 @@ export const generateToken = async (userId: string): Promise<string> => {
 
     }
 }
-export const decodeToken = async (token: string) : Promise<string> => {
+export const decodeToken =  (token: string) : string  => {
     try {
-        // const payload : string | JwtPayload = await jwt.verify(token, process.env.JWT_SECRET_CODE) 
-        // if (typeof payload==='string') throw new Error(payload + "  fhhgfh")
-        // return payload.userId; 
-
-        const {userId} = await jwt.verify(token, process.env.JWT_SECRET_CODE) as JwtPayload
+        const {userId}=  jwt.verify(token, process.env.JWT_SECRET_CODE) as JwtPayload
         return userId; 
-
-
     }
     catch (error) {
         throw new Error(error.message)

@@ -12,13 +12,13 @@ export const getTweetsByLikes = async (amount: number) : Promise<Array<TweetDocu
 export const getTweetsByDate = async (date: Date): Promise<Array<TweetDocument>>  => await Tweet.find({ dateCreated: { $gt: date } })
   .populate("comments");
 
-export const addTweet = async (body: Body) : Promise<TweetDocument>  => {
-  const newTweet = new Tweet(body);
+export const addTweet = async (body: TweetDocument, userId: string) : Promise<TweetDocument>  => {
+  const newTweet : TweetDocument = new Tweet( {...body,tweetOwner: userId});
   await newTweet.save();
   return newTweet;
 };
 export const updateComments = async (tweetId: string, newComments: string)  : Promise<TweetDocument>=> {
-  const update = await Tweet.findOneAndUpdate(
+  const update : TweetDocument = await Tweet.findOneAndUpdate(
     { _id: tweetId },
     { $addToSet: { comments: newComments } },
     { new: true }
@@ -26,7 +26,7 @@ export const updateComments = async (tweetId: string, newComments: string)  : Pr
   return update;
 }
 export const updateLikes = async (tweetId: string, newLikes: string) : Promise<TweetDocument>=> {
-  const update = await Tweet.findOneAndUpdate(
+  const update : TweetDocument = await Tweet.findOneAndUpdate(
     { _id: tweetId },
     { $addToSet: { likes: newLikes } },
     { new: true }
@@ -34,8 +34,8 @@ export const updateLikes = async (tweetId: string, newLikes: string) : Promise<T
   return update;
 }
 export const updateDislikes = async (tweetId: string, newLikes: string) : Promise<TweetDocument> => {
-  const update = await Tweet.findOneAndUpdate({ _id: tweetId, likes: { $in: [newLikes] } }, { $pull: { likes: newLikes } }, { new: true })
-  return update;;
+  const update : TweetDocument = await Tweet.findOneAndUpdate({ _id: tweetId, likes: { $in: [newLikes] } }, { $pull: { likes: newLikes } }, { new: true })
+  return update;
 }
 
 export const deleteTweet = async (id: string) :  Promise<TweetDocument> => await Tweet.findOneAndDelete({ _id: id });
