@@ -1,5 +1,10 @@
 import { Document, Types } from "mongoose";
 
+
+export enum Role {
+  manager= "manager",
+  user="user"
+}
 type User = {
   _id?:Types.ObjectId;
   userName: string;
@@ -8,7 +13,7 @@ type User = {
   dateCreated?: Date;
   image?: string;
   loction?:string;
-  role: "manager" | "user";
+  role: Role;
   followers: Types.ObjectId[];
 };
 

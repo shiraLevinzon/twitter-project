@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import * as tweetManager from './Tweet.manager'
-import TweetDocument from '../../../types/tweet.type';
-import { DocTweetResponse,DocArrTweetResponse, DeleteResponse, DocResponse} from '../../../types/response.type'
+import { DocTweetResponse, DeleteResponse, DocResponse} from '../../../types/response.type'
 
 
 export const addTweet = async (req: Request, res: Response) : Promise<Response>=> {

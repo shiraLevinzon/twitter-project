@@ -21,7 +21,6 @@ export const addUser = async (req: Request): Promise<DocUserResponse> => {
     status: 201,
     body: newUser
   };
-
 }
 
 export const addLogin = async (req: Request): Promise<LoginDocResponse> => {
@@ -47,7 +46,7 @@ export const getUserById = async (id: string) : Promise<DocUserResponse>=> {
 }
 
 export const updateFollow = async (req: Request, userId: string): Promise<DocUserResponse> => {
-  const { id: followId } = req.params;
+  const { id: followId } : { id?: string } = req.params;
   if (!(await userRepository.getUserById(followId))) throw new Error('this user isnt exist');
   const updateUser: UserDocument = await userRepository.updateFollow(userId, followId);
   return {
@@ -57,7 +56,7 @@ export const updateFollow = async (req: Request, userId: string): Promise<DocUse
 
 }
 export const updateUnfollow = async (req: Request, userId: string):Promise<DocUserResponse> => {
-  const { id: followId } = req.params;
+  const { id: followId } : { id?: string } = req.params;
   if (!(await userRepository.getUserById(followId))) throw new Error('this user isnt exist');
   const updateUser : UserDocument = await userRepository.updateUnfollow(userId, followId)
   return {
@@ -67,7 +66,7 @@ export const updateUnfollow = async (req: Request, userId: string):Promise<DocUs
 
 };
 export const updateRoll = async (req: Request, userId: string): Promise<DocUserResponse> => {
-  const { role } = req.params;
+  const { role } : { role?: string } = req.params;
   const updateUser: UserDocument = await userRepository.updateRoll(userId, role);
   return {
     status: 200,
