@@ -28,7 +28,7 @@ const userSchema = new Schema<UserDocument>({
   role: {
     type: String,
     enum: Object.values(Role),
-    required: true
+    default: Role.user
   },
   followers: [
     {
