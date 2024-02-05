@@ -1,7 +1,7 @@
 import Tweet from "../db/Tweet.model";
 import TweetDocument from "../../../types/tweet.type";
 
-export const getAllTweets = async (query: Object): Promise<Array<TweetDocument>> => await Tweet.find(query);
+export const getAllTweets = async (query: Object): Promise<Array<TweetDocument>> => await Tweet.find(query).populate("comments").populate("tweetOwner");
 export const getTweetById = async (id: string): Promise<TweetDocument> => await Tweet.findOne({ _id: id });
 export const getTweetsByOwener = async (ownerId: string): Promise<Array<TweetDocument>> => await Tweet.find({ tweetOwner: ownerId })
   .populate("comments");
