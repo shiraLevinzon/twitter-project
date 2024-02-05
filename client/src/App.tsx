@@ -1,26 +1,37 @@
-import React from 'react';
-import logo from './logo.svg';
+import { createContext, useState } from 'react';
 import './App.css';
+import Home from './pages/Home/Index';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Login from './pages/Login/Index';
+import  Signup  from './pages/Signup/Index';
+import TweetDocument from '../../types/tweet.type';
 
+
+
+export const TweetContext = createContext({});
+
+const queryClient = new QueryClient();
 function App() {
+  const [tweetsList, setTweetsList] = useState<Array<TweetDocument>>([]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <QueryClientProvider client={queryClient}>
+      <TweetContext.Provider value={{ setTweetsList, tweetsList }}>
+        <BrowserRouter>
+          <Routes>
+            <Route path="login" element={<Login />}/>
+            <Route path="signup" element={<Signup />}/>
+            <Route index element={<Home />} />
+            
+          </Routes>
+        </BrowserRouter>
+
+      </TweetContext.Provider>
+    </QueryClientProvider>
   );
 }
 
 export default App;
+
+
