@@ -5,8 +5,8 @@ type Tweet = {
   text: string;
   dateCreated?: Date;
   image?: string;
-  comments: Types.ObjectId[] ;
-  tweetOwner?: Types.ObjectId | string | UserDocument;
+  comments: Types.ObjectId[] | TweetDocument[];
+  tweetOwner?: Types.ObjectId | UserDocument;
   likes: Types.ObjectId[];
 };
 

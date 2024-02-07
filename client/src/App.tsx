@@ -4,29 +4,28 @@ import Home from './pages/Home/Index';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from './pages/Login/Index';
-import  Signup  from './pages/Signup/Index';
-import TweetDocument from '../../types/tweet.type';
+import Signup from './pages/Signup/Index';
+import { UserContext } from './context/UserContext';
+import TweetContext from './context/TweetContext';
+import { Tweet } from './pages/Tweet/Tweet';
+import AppRoutes from './routes/AppRoutes';
 
 
+const queryClient: QueryClient = new QueryClient();
 
-export const TweetContext = createContext({});
-
-const queryClient = new QueryClient();
 function App() {
-  const [tweetsList, setTweetsList] = useState<Array<TweetDocument>>([]);
+
+  const [tweet, setTweet] = useState({});
+  const [user, setUser] = useState({});
 
   return (
     <QueryClientProvider client={queryClient}>
-      <TweetContext.Provider value={{ setTweetsList, tweetsList }}>
+      <TweetContext.Provider value={{ tweet, setTweet }}>
+        <UserContext.Provider value={{ user, setUser }}>
         <BrowserRouter>
-          <Routes>
-            <Route path="login" element={<Login />}/>
-            <Route path="signup" element={<Signup />}/>
-            <Route index element={<Home />} />
-            
-          </Routes>
-        </BrowserRouter>
-
+            <AppRoutes />
+          </BrowserRouter>
+        </UserContext.Provider>
       </TweetContext.Provider>
     </QueryClientProvider>
   );

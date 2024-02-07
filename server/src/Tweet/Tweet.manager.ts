@@ -6,10 +6,11 @@ import map from 'lodash/fp/map';
 import TweetDocument from "../../../types/tweet.type";
 import { DocTweetResponse, DocArrTweetResponse, DeleteResponse } from '../../../types/response.type';
 import { Role } from "../../../types/user.type";
+import { number } from "joi";
 
 export const addTweet = async (req: Request, userId: string): Promise<DocTweetResponse> => {
     const { body }: { body: TweetDocument } = req;
-    const newTweet : TweetDocument = await tweetRepository.addTweet(body, userId);
+    const newTweet: TweetDocument = await tweetRepository.addTweet(body, userId);
     return {
         status: 201,
         body: newTweet
@@ -27,11 +28,11 @@ const deleteTweetsAndComments = async (id: string): Promise<void> => {
 
 
 export const deleteTweet = async (req: Request, userId: string): Promise<DeleteResponse> => {
-    const { id: tweetId } : { id?: string }= req.params;
+    const { id: tweetId }: { id?: string } = req.params;
 
-    const { role: userRole } : { role?: Role } = (await getUserById(userId)).body;
-    const { tweetOwner }  = await tweetRepository.getTweetById(tweetId);
-    const { role: ownerRole } : { role?: Role }= (await getUserById(tweetOwner.toString())).body;
+    const { role: userRole }: { role?: Role } = (await getUserById(userId)).body;
+    const { tweetOwner } = await tweetRepository.getTweetById(tweetId);
+    const { role: ownerRole }: { role?: Role } = (await getUserById(tweetOwner.toString())).body;
 
     const isDeletedByUser: boolean = userRole === "user" && tweetOwner.toString() !== userId;
     const isDeleteByManager: boolean = userRole === 'manager' && ownerRole === 'manager';
@@ -64,7 +65,7 @@ export const deleteTweet = async (req: Request, userId: string): Promise<DeleteR
 
 }
 export const updateComments = async (req: Request, newTweetId: string): Promise<DocTweetResponse> => {
-    const { id: fatherTweet } : { id?: string } = req.params;
+    const { id: fatherTweet }: { id?: string } = req.params;
     const res: TweetDocument = await tweetRepository.updateComments(fatherTweet, newTweetId);
     return {
         status: 200,
@@ -73,7 +74,7 @@ export const updateComments = async (req: Request, newTweetId: string): Promise<
 
 }
 export const updateLikes = async (req: Request, userId: string): Promise<DocTweetResponse> => {
-    const { id: fatherTweet } : { id?: string } = req.params;
+    const { id: fatherTweet }: { id?: string } = req.params;
     const res: TweetDocument = await tweetRepository.updateLikes(fatherTweet, userId);
     return {
         status: 200,
@@ -82,7 +83,7 @@ export const updateLikes = async (req: Request, userId: string): Promise<DocTwee
 
 }
 export const updateDislikes = async (req: Request, userId: string): Promise<DocTweetResponse> => {
-    const { id: fatherTweet } : { id?: string } = req.params;
+    const { id: fatherTweet }: { id?: string } = req.params;
     const res: TweetDocument = await tweetRepository.updateDislikes(fatherTweet, userId);
     return {
         status: 200,
@@ -92,47 +93,54 @@ export const updateDislikes = async (req: Request, userId: string): Promise<DocT
 }
 
 export const getTweetById = async (req: Request): Promise<DocTweetResponse> => {
-    const { id: tweetId } : { id?: string }= req.params;
+    const { id: tweetId }: { id?: string } = req.params;
     const tweet: TweetDocument = await tweetRepository.getTweetById(tweetId);
     return {
         status: 200,
         body: tweet
     }
 }
+const getTweetsSort = async (sortOption: string, query: Object,page: number, pageSize: number): Promise<Array<TweetDocument>> => {
+    if (sortOption === 'date') return await tweetRepository.getTweetsByDate(page, pageSize,query);
+    else if (sortOption === 'likes') return await tweetRepository.getTweetsByLikes(page, pageSize,query);
+    else return await tweetRepository.getAllTweets(query);
 
+}
 export const getAllTweets = async (req: Request): Promise<DocArrTweetResponse> => {
-    const { search } : { search?: string } = req.query;
+    const page = 1;
+    const pageSize = 10;
+    const { search, sortOption }: { search?: string, sortOption?: string } = req.query;
     const query = search ? { text: { $regex: search, $options: 'i' } } : {};
 
-    const tweets: Array<TweetDocument> = await tweetRepository.getAllTweets(query);
+    const tweets: Array<TweetDocument> = await getTweetsSort(sortOption, query, page, pageSize);
     return {
         status: 200,
         body: tweets
     }
 }
 
-export const getTweetsByDate = async (req: Request): Promise<DocArrTweetResponse> => {
-    const { date }  : { date?: string } = req.query;
-    const tweets: Array<TweetDocument> = await tweetRepository.getTweetsByDate(new Date(date.toString()));
-    return {
-        status: 200,
-        body: tweets
-    }
-}
-export const getTweetsByLikes = async (req: Request): Promise<DocArrTweetResponse> => {
-    const { amount } : { amount?: string }= req.query;
-    const amountNumber: number = +amount;
-    if (isNaN(amountNumber)) throw new Error('Invalid amount');
+// export const getTweetsByDate = async (req: Request): Promise<DocArrTweetResponse> => {
+//     const { date }: { date?: string } = req.query;
+//     const tweets: Array<TweetDocument> = await tweetRepository.getTweetsByDate(new Date(date.toString()));
+//     return {
+//         status: 200,
+//         body: tweets
+//     }
+// }
+// export const getTweetsByLikes = async (req: Request): Promise<DocArrTweetResponse> => {
+//     const { amount }: { amount?: string } = req.query;
+//     const amountNumber: number = +amount;
+//     if (isNaN(amountNumber)) throw new Error('Invalid amount');
 
-    const tweets: Array<TweetDocument> = await tweetRepository.getTweetsByLikes(amountNumber);
-    return {
-        status: 200,
-        body: tweets
-    }
+//     const tweets: Array<TweetDocument> = await tweetRepository.getTweetsByLikes(amountNumber);
+//     return {
+//         status: 200,
+//         body: tweets
+//     }
 
-};
+// };
 export const getTweetsByOwener = async (req: Request): Promise<DocArrTweetResponse> => {
-    const { owner } : { owner?: string }= req.query;
+    const { owner }: { owner?: string } = req.query;
     const tweets: Array<TweetDocument> = await tweetRepository.getTweetsByOwener(owner.toString());
     return {
         status: 200,

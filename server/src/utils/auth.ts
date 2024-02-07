@@ -7,9 +7,7 @@ const auth = async (req: Request, res: Response, next: NextFunction): Promise<Re
     const bearerToken: string = req.headers["authorization"];
     if (!bearerToken) return res.status(401).send("provide token");
     try {
-        const token: string = split(" ")(bearerToken)[1];
-        console.log(token);
-        
+        const token: string = split(" ")(bearerToken)[1];        
         const payload: string = decodeToken(token);
         res.locals.userId = payload;
         next();

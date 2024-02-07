@@ -1,10 +1,14 @@
 import TweetDocument from "../../../../types/tweet.type";
-import  Tweet from "../../components/Tweet/Index";
+import UserDocument from "../../../../types/user.type";
+import TweetItem from "../../components/TweetItem/Index";
 
 
 
 export const renderTweet = (tweet: TweetDocument) => (
-       <Tweet key={tweet.id} tweet={tweet} />
-    
-   
-  );
+     <TweetItem key={tweet.id} tweet={tweet} />
+);
+
+export const margeFilter = (tw: TweetDocument, user: UserDocument): boolean => {
+     return Array.isArray(tw.tweetOwner) && tw.tweetOwner.length > 0 &&
+          user.followers?.includes(tw.tweetOwner[0]._id) || false;
+}

@@ -6,15 +6,15 @@ export enum Role {
   user="user"
 }
 type User = {
-  _id?:Types.ObjectId;
+  _id?:Types.ObjectId |string;
   userName: string;
   email: string;
   password: string;
   dateCreated?: Date;
   image?: string;
   loction?:string;
-  role: Role;
-  followers: Types.ObjectId[];
+  role?: Role;
+  followers?: Types.ObjectId[];
 };
 
 type UserDocument = User & Document;

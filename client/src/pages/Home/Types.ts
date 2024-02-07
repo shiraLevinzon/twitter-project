@@ -1,1 +1,3 @@
-export {}
+export type Input={
+    filterOption: string,
+}

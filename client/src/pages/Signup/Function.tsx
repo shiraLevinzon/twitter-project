@@ -1,21 +1,17 @@
-import { SubmitHandler } from "react-hook-form";
+import { toast } from "react-toastify";
 import { Input } from "./Types";
+import { NavigateFunction } from "react-router";
 
-export const onSubmit: SubmitHandler<Input> = async (info) => {
-    console.log(JSON.stringify(info));
-    const response = await fetch('http://localhost:3001/api/v1/users/addUser', {
+export const submitForm  = async (info: Input, navigate: NavigateFunction) : Promise<void> => {
+    const response : Response = await fetch('http://localhost:3001/api/v1/users/addUser', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json', // Specify the content type
+            'Content-Type': 'application/json', 
         },
         body: JSON.stringify(info),
-    });
-    if (!response.ok) {
-        console.log('ggggg');
-        
-    }
-    const data =await response.json();
-    console.log(data);
+    })
+    
+    !response.ok? toast.error("Error",{position: 'top-right'}): navigate('/')
 
 }
 
