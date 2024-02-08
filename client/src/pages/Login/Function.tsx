@@ -3,6 +3,7 @@ import UserDocument from "../../../../types/user.type";
 import { NavigateFunction } from "react-router";
 import { toast } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
+
 export const submitForm = async (info: Input, navigate: NavigateFunction): Promise<UserDocument> => {
 
     const response: Response = await fetch('http://localhost:3001/api/v1/users/addLogin',

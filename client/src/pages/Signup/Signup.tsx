@@ -29,7 +29,7 @@ const Signup: FC = ({}) => {
 
   const navigate: NavigateFunction = useNavigate();
 
-  const submitSigninForm: SubmitHandler<Input> = async (info: Input) => {
+  const submitSigninForm: SubmitHandler<Input> = async (info: Input) : Promise<void> => {
     submitForm(info, navigate)
   }
 

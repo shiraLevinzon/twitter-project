@@ -30,15 +30,16 @@ const Home: FC = ({ }) => {
     });
 
     const filterOptionChange = async (event: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
-        if (event.target.value === 'newFollowing')
-            await setQuery({ sortOption: "date", search: query.search, isFilterRequire: true });
 
-        else if (event.target.value === 'popularFollowing')
-            await setQuery({ sortOption: "likes", search: query.search, isFilterRequire: true });
-
-        else
-            await setQuery({ sortOption: event.target.value, search: query.search, isFilterRequire: false });
-
+        const sortOptions: Record<string, { sortOption: string, isFilterRequire: boolean }> = {
+            newFollowing: { sortOption: "date", isFilterRequire: true },
+            popularFollowing: { sortOption: "likes", isFilterRequire: true },
+            date: { sortOption: "date", isFilterRequire: false },
+            likes: { sortOption: "likes", isFilterRequire: false},
+            all: { sortOption: "all", isFilterRequire: false}
+        };
+    
+        await setQuery({ ...sortOptions[event.target.value], search: query.search });
         await refetch();
     };
 
@@ -46,15 +47,6 @@ const Home: FC = ({ }) => {
         setQuery({ sortOption: query.sortOption, search: event.target.value, isFilterRequire: false });
         await refetch();
     };
-
-    // const newFollowingChange = async (): Promise<void> => {
-    //     await setQuery({ sortOption: "date", search: query.search, isFilterRequire: true });
-    //     await refetch();
-    // };
-    // const popularFollowingChange = async (): Promise<void> => {
-    //     await setQuery({ sortOption: "likes", search: query.search, isFilterRequire: true });
-    //     await refetch();
-    // };
 
     return (
         <Container sx={{ paddingTop: 5 }}>

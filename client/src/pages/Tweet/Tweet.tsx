@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from 'react'
-import { Await, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { Avatar, Card, CardActions, CardContent, CardHeader, CardMedia, Checkbox, Collapse, Container, FormControlLabel, Grid, Icon, IconButton, IconButtonProps, Typography } from '@mui/material';
 import AddCommentIcon from '@mui/icons-material/AddComment';
 import TweetDocument from '../../../../types/tweet.type';
@@ -7,44 +7,25 @@ import Favorite from '@mui/icons-material/Favorite';
 import { FavoriteBorder } from '@mui/icons-material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import * as tweetFunction from "./Function";
-import * as React from 'react';
-import { styled } from '@mui/material/styles';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { map } from 'lodash/fp';
+import { ToastContainer } from 'react-toastify';
 
-interface ExpandMoreProps extends IconButtonProps {
-  expand: boolean;
-}
-
-const ExpandMore = styled((props: ExpandMoreProps) => {
-  const { expand, ...other } = props;
-  return <IconButton {...other} />;
-})(({ theme, expand }) => ({
-  transform: !expand ? 'rotate(0deg)' : 'rotate(180deg)',
-  marginLeft: 'auto',
-  transition: theme.transitions.create('transform', {
-    duration: theme.transitions.duration.shortest,
-  }),
-}));
 
 
 const Tweet: FC = () => {
   const location = useLocation();
   const [tweet, setTweet] = useState<TweetDocument>();
+  const [isChecked, setIsChecked] = useState<boolean>(false);
 
   useEffect(() => {
     setTweet(location.state.tweet)
   }, [])
 
-  const [isChecked, setIsChecked] = useState(false);
 
-  const updateLike = async () => {
+  const updateLike = async () : Promise<void> => {
     setIsChecked(!isChecked);
     !isChecked ? await setTweet(await tweetFunction.updateLike(`addLike/${tweet?._id}`)) :
-    await setTweet(await tweetFunction.updateLike(`addDislike/${tweet?._id}`))
-    console.log(tweet);
-    
+    await setTweet(await tweetFunction.updateLike(`addDislike/${tweet?._id}`))    
   };
 
   return (
@@ -79,6 +60,7 @@ const Tweet: FC = () => {
           </IconButton>
 
         </CardActions>
+        <ToastContainer/>
 
         {/* <Grid>
           Comments:
