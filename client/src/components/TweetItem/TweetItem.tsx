@@ -4,14 +4,18 @@ import { Avatar, Divider, ListItem, ListItemAvatar, ListItemText } from '@mui/ma
 import * as tweetFunction from './Function';
 import { Typography } from '@mui/material';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
+import { UserContext } from '../../context/UserContext';
+import TweetContext from '../../context/TweetContext';
 
 
 const TweetItem: FC<TweetProps> = ({ tweet }) => {
 
+  const {setTweet}= useContext(TweetContext);
   const navigate: NavigateFunction = useNavigate()
 
-  const goToTweetPage = () : void => {
-    navigate('/tweet', { state: { tweet: tweet } })
+  const goToTweetPage = async () : Promise<void> => {
+    await setTweet(tweet);
+    navigate('/tweet');
   }
   return (
     <>

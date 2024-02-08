@@ -1,6 +1,7 @@
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import TweetDocument from "../../../../types/tweet.type";
+import Comment from "../../components/Comment/Index";
 
 export const updateLike = async (route: string): Promise<TweetDocument> => {
     const token: string | null = localStorage.getItem("token");
@@ -18,3 +19,7 @@ export const updateLike = async (route: string): Promise<TweetDocument> => {
     return await response.json();
 
 };
+
+export const renderComment = (comment: TweetDocument) => (
+    <Comment key={comment.id} tweet={comment} />
+);
