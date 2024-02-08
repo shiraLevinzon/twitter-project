@@ -11,7 +11,7 @@ export const submitForm  = async (info: Input, navigate: NavigateFunction) : Pro
         body: JSON.stringify(info),
     })
     
-    !response.ok? toast.error("Error",{position: 'top-right'}): navigate('/')
+    !response.ok? toast.error( await response.text() ,{position: 'top-right'}) : navigate('/')
 
 }
 

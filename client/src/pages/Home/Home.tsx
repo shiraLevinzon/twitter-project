@@ -10,7 +10,7 @@ import { filter } from "lodash/fp";
 import { UserContext } from "../../context/UserContext";
 import UserDocument from "../../../../types/user.type";
 
-const Home: FC = ({}) => {
+const Home: FC = ({ }) => {
     const { user }: { user: UserDocument } = useContext(UserContext);
     const [query, setQuery] = useState({
         sortOption: '',
@@ -28,8 +28,17 @@ const Home: FC = ({}) => {
             return response.json();
         },
     });
+
     const filterOptionChange = async (event: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
-        setQuery({ sortOption: event.target.value, search: query.search, isFilterRequire: false });
+        if (event.target.value === 'newFollowing')
+            await setQuery({ sortOption: "date", search: query.search, isFilterRequire: true });
+
+        else if (event.target.value === 'popularFollowing')
+            await setQuery({ sortOption: "likes", search: query.search, isFilterRequire: true });
+
+        else
+            await setQuery({ sortOption: event.target.value, search: query.search, isFilterRequire: false });
+
         await refetch();
     };
 
@@ -37,14 +46,15 @@ const Home: FC = ({}) => {
         setQuery({ sortOption: query.sortOption, search: event.target.value, isFilterRequire: false });
         await refetch();
     };
-    const newFollowingChange = async (): Promise<void> => {
-        await setQuery({ sortOption: "date", search: query.search, isFilterRequire: true });
-        await refetch();
-    };
-    const popularFollowingChange = async (): Promise<void> => {
-        await setQuery({ sortOption: "likes", search: query.search, isFilterRequire: true });
-        await refetch();
-    };
+
+    // const newFollowingChange = async (): Promise<void> => {
+    //     await setQuery({ sortOption: "date", search: query.search, isFilterRequire: true });
+    //     await refetch();
+    // };
+    // const popularFollowingChange = async (): Promise<void> => {
+    //     await setQuery({ sortOption: "likes", search: query.search, isFilterRequire: true });
+    //     await refetch();
+    // };
 
     return (
         <Container sx={{ paddingTop: 5 }}>
@@ -60,8 +70,8 @@ const Home: FC = ({}) => {
                             <FormControlLabel value="all" control={<Radio style={{ color: 'orange' }} />} label="All" />
                             <FormControlLabel value="date" control={<Radio style={{ color: 'orange' }} />} label="Newest" />
                             <FormControlLabel value="likes" control={<Radio style={{ color: 'orange' }} />} label="Most Popular" />
-                            <FormControlLabel onClick={newFollowingChange} value="newFollowing" control={<Radio style={{ color: 'orange' }} />} label="Newest from your folowing" />
-                            <FormControlLabel onClick={popularFollowingChange} value="popularFollowing" control={<Radio style={{ color: 'orange' }} />} label="Most Popular from your folowing" />
+                            <FormControlLabel  value="newFollowing" control={<Radio style={{ color: 'orange' }} />} label="Newest from your folowing" />
+                            <FormControlLabel  value="popularFollowing" control={<Radio style={{ color: 'orange' }} />} label="Most Popular from your folowing" />
                         </RadioGroup>
                     </Grid>
                     <Grid item xs={3}>

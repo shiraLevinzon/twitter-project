@@ -7,11 +7,15 @@ import { NavigateFunction, useNavigate } from 'react-router-dom';
 
 
 const TweetItem: FC<TweetProps> = ({ tweet }) => {
-  
+
   const navigate: NavigateFunction = useNavigate()
+
+  const goToTweetPage = () : void => {
+    navigate('/tweet', { state: { tweet: tweet } })
+  }
   return (
     <>
-      <ListItem onClick={() => { navigate('/tweet', { state: { tweet: tweet } }) }} id={tweet._id} alignItems="flex-start">
+      <ListItem onClick={goToTweetPage} id={tweet._id} alignItems="flex-start">
         <ListItemAvatar>
           <Avatar src="https://i.pinimg.com/originals/3d/14/bf/3d14bf9a9325bb78d40bb80ed3a571a2.png" />
         </ListItemAvatar>
@@ -39,6 +43,7 @@ const TweetItem: FC<TweetProps> = ({ tweet }) => {
             </Fragment>
           }
         />
+        {tweet?.likes.length + " likes"}
       </ListItem>
       <Divider />
     </>

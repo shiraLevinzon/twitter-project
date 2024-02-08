@@ -12,12 +12,14 @@ export const submitForm = async (info: Input, navigate: NavigateFunction): Promi
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(info),
-        })
+        });
 
-    if(!response.ok) toast.error("Error",{position: 'top-right'});
 
+    if (!response.ok) toast.error("email or password isnt valid", { position: 'top-right' });
+    
     const { user, token }: { user: UserDocument, token: string } = await response.json();
     localStorage.setItem("token", token);
     navigate('/home');
     return user;
+
 }
