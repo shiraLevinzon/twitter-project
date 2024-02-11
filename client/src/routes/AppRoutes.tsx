@@ -10,7 +10,7 @@ const AppRoutes: FC = () => (
     <Route path="home" element={<Home />} />
     <Route path="signup" element={<Signup />} />
     <Route index element={<Login />} />
-    <Route path="tweet" element={<Tweet />} />
+    <Route path="/tweet/:id" element={<Tweet />} />
   </Routes>
 );
 

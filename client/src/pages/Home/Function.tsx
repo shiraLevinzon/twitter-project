@@ -5,7 +5,8 @@ import TweetItem from "../../components/TweetItem/Index";
 
 
 export const renderTweet = (tweet: TweetDocument) => (
-     <TweetItem key={tweet.id+'t'} tweet={tweet} />
+
+     <TweetItem key={tweet.id} tweet={tweet}/>
 );
 
 export const margeFilter = (tw: TweetDocument, user: UserDocument): boolean => {

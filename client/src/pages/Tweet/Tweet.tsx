@@ -1,5 +1,5 @@
 import { FC, useContext, useEffect, useState } from 'react'
-import { useLocation } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import { Avatar, Card, CardActions, CardContent, CardHeader, CardMedia, Checkbox, Collapse, Container, Divider, FormControlLabel, Grid, Icon, IconButton, IconButtonProps, List, Typography } from '@mui/material';
 import AddCommentIcon from '@mui/icons-material/AddComment';
 import TweetDocument from '../../../../types/tweet.type';
@@ -11,23 +11,40 @@ import { map } from 'lodash/fp';
 import { ToastContainer } from 'react-toastify';
 import { UserContext } from '../../context/UserContext';
 import TweetContext from '../../context/TweetContext';
-
+import * as React from 'react';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { Input } from './Types';
 
 
 const Tweet: FC = () => {
-  //const location = useLocation();
   const { user } = useContext(UserContext);
   const { tweet, setTweet } = useContext(TweetContext);
-  const [comments, setComments] = useState<Array<TweetDocument>>();
   const [isChecked, setIsChecked] = useState<boolean>(false);
+  const { register, handleSubmit, formState: { errors } } = useForm<Input>();
+  const [open, setOpen] = React.useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+
 
   useEffect(() => {
-    //const currentTweet = location.state.tweet;
-    //setTweet(currentTweet);
-    tweet.likes.includes(user._id) ? setIsChecked(true) : setIsChecked(false)
-    setComments(tweet.comments)
+    tweet.likes.includes(user._id) ? setIsChecked(true) : setIsChecked(false);
+  }, [tweet, user._id]);
 
-  }, [])
+
 
   const updateLike = async (): Promise<void> => {
     setIsChecked(!isChecked);
@@ -35,7 +52,11 @@ const Tweet: FC = () => {
       await setTweet(await tweetFunction.updateLike(`addDislike/${tweet?._id}`))
   };
 
-
+  const addComment: SubmitHandler<Input> = async (comment: Input) => {
+    const newUpdateTweet = await tweetFunction.addComment(comment.tweetText, tweet._id);
+    setTweet(newUpdateTweet);
+    handleClose();
+  }
   return (
     <Container sx={{ paddingTop: 16 }}>
       <Card >
@@ -63,9 +84,35 @@ const Tweet: FC = () => {
           <IconButton>
             <DeleteIcon fontSize='large' />
           </IconButton>
-          <IconButton>
-            <AddCommentIcon fontSize='large' />
-          </IconButton>
+
+          <React.Fragment>
+            <IconButton onClick={handleClickOpen}>
+              <AddCommentIcon fontSize='large' />
+            </IconButton>
+            <Dialog
+              sx={{ minWidth: 300 }}
+              open={open}
+              onClose={handleClose}
+              PaperProps={{
+                component: 'form',
+                onSubmit: handleSubmit(addComment)
+              }}
+            >
+              <DialogTitle>Add Comment</DialogTitle>
+              <DialogContent>
+                <DialogContentText>
+                  Add a comment that conforms to the site's standard, inappropriate comments will be deleted
+                </DialogContentText>
+                <TextField  {...register("tweetText", { required: "tweetText is required." })}
+                  autoFocus required margin="dense" id="tweetText" name="tweetText" label="Your Comment" type="text" fullWidth variant="standard"
+                />
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={handleClose}>Cancel</Button>
+                <Button type="submit">Add</Button>
+              </DialogActions>
+            </Dialog>
+          </React.Fragment>
 
         </CardActions>
         <ToastContainer />
@@ -76,7 +123,7 @@ const Tweet: FC = () => {
           Comments:
         </Typography>
         <List sx={{ bgcolor: 'background.paper', paddingLeft: 8 }}>
-          {map(tweetFunction.renderComment)(comments)}
+          {map(tweetFunction.renderComment)(tweet.comments)}
         </List>
       </Grid>
     </Container>

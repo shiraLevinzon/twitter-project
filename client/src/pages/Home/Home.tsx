@@ -9,9 +9,12 @@ import SearchIcon from '@mui/icons-material/Search';
 import { filter } from "lodash/fp";
 import { UserContext } from "../../context/UserContext";
 import UserDocument from "../../../../types/user.type";
+import  TweetItem from "../../components/TweetItem/Index";
+import TweetContext from "../../context/TweetContext";
 
 const Home: FC = ({ }) => {
     const { user }: { user: UserDocument } = useContext(UserContext);
+    const {setTweet}= useContext(TweetContext);
     const [query, setQuery] = useState({
         sortOption: '',
         search: '',
@@ -35,10 +38,10 @@ const Home: FC = ({ }) => {
             newFollowing: { sortOption: "date", isFilterRequire: true },
             popularFollowing: { sortOption: "likes", isFilterRequire: true },
             date: { sortOption: "date", isFilterRequire: false },
-            likes: { sortOption: "likes", isFilterRequire: false},
-            all: { sortOption: "all", isFilterRequire: false}
+            likes: { sortOption: "likes", isFilterRequire: false },
+            all: { sortOption: "all", isFilterRequire: false }
         };
-    
+
         await setQuery({ ...sortOptions[event.target.value], search: query.search });
         await refetch();
     };
@@ -47,7 +50,7 @@ const Home: FC = ({ }) => {
         setQuery({ sortOption: query.sortOption, search: event.target.value, isFilterRequire: false });
         await refetch();
     };
-
+  
     return (
         <Container sx={{ paddingTop: 5 }}>
             <FormControl>
@@ -62,8 +65,8 @@ const Home: FC = ({ }) => {
                             <FormControlLabel value="all" control={<Radio style={{ color: 'orange' }} />} label="All" />
                             <FormControlLabel value="date" control={<Radio style={{ color: 'orange' }} />} label="Newest" />
                             <FormControlLabel value="likes" control={<Radio style={{ color: 'orange' }} />} label="Most Popular" />
-                            <FormControlLabel  value="newFollowing" control={<Radio style={{ color: 'orange' }} />} label="Newest from your folowing" />
-                            <FormControlLabel  value="popularFollowing" control={<Radio style={{ color: 'orange' }} />} label="Most Popular from your folowing" />
+                            <FormControlLabel value="newFollowing" control={<Radio style={{ color: 'orange' }} />} label="Newest from your folowing" />
+                            <FormControlLabel value="popularFollowing" control={<Radio style={{ color: 'orange' }} />} label="Most Popular from your folowing" />
                         </RadioGroup>
                     </Grid>
                     <Grid item xs={3}>
