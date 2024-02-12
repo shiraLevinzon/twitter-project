@@ -11,7 +11,7 @@ const tweetSchema = new Schema<TweetDocument>({
     },
     dateCreated: {
         type: Date,
-        default: Date.now(),
+        default: () => new Date(),
     },
     comments:[{
         type: Schema.Types.ObjectId,

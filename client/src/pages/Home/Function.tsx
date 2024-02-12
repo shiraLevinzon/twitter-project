@@ -15,8 +15,4 @@ export const margeFilter = (tw: TweetDocument, user: UserDocument): boolean => {
 }
 
 
-export const addTweet = () => {
-    
-}
-
 

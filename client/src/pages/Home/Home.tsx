@@ -11,6 +11,7 @@ import { UserContext } from "../../context/UserContext";
 import UserDocument from "../../../../types/user.type";
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { Query } from "./Types";
+import DialogAddTweet from "../../components/DialogAddTweet/Index";
 
 const Home: FC = ({ }) => {
     const { user }: { user: UserDocument } = useContext(UserContext);
@@ -49,17 +50,13 @@ const Home: FC = ({ }) => {
         setQuery({ sortOption: query.sortOption, search: event.target.value, isFilterRequire: false });
         await refetch();
     };
-    const addTweet = async (): Promise<void> => {
-        homeFunction.addTweet()
-        await refetch();
-    };
-    
+
 
     return (
         <Container sx={{ paddingTop: 5 }}>
             <FormControl>
                 <Grid container spacing={2} alignItems="center">
-                    <Grid item xs={5}>
+                    <Grid item xs={7}>
                         <RadioGroup
                             row
                             aria-labelledby="demo-row-radio-buttons-group-label"
@@ -77,10 +74,8 @@ const Home: FC = ({ }) => {
                     <Grid item xs={3}>
                         <TextField onChange={filterSearchChange} id="outlined-basic" label={<SearchIcon />} variant="outlined" ></TextField>
                     </Grid>
-                    <Grid item xs={2}>
-                        <Button sx={{background:'orange'}} variant="contained" startIcon={<AddCircleIcon />}>
-                            Add Tweet
-                        </Button>
+                    <Grid item xs={1}>
+                        <DialogAddTweet kind='tweet' />
                     </Grid>
                 </Grid>
 
