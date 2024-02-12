@@ -19,12 +19,12 @@ import { ToastContainer, toast } from "react-toastify";
 
 
 const Login: FC = ({}) => {
-    const { setUser }: { setUser: React.Dispatch<React.SetStateAction<{}>> } = useContext(UserContext);
+    const { setUser }: { setUser: React.Dispatch<React.SetStateAction<UserDocument| null>> } = useContext(UserContext);
     const { register, handleSubmit, formState: { errors } } = useForm<Input>();
 
     const navigate: NavigateFunction = useNavigate();
     const submitLoginForm: SubmitHandler<Input> = async (info: Input) => {
-        const user: UserDocument = await submitForm(info, navigate);
+        const user: UserDocument |null = await submitForm(info, navigate);
         setUser(user)
     }
 

@@ -9,17 +9,19 @@ import TweetContext from '../../context/TweetContext';
 
 
 const TweetItem: FC<TweetProps> = ({ tweet }) => {
+  const isTweetOwnerValid: boolean = Array.isArray(tweet?.tweetOwner) && tweet.tweetOwner.length > 0;
 
-  const { setTweet } = useContext(TweetContext);
+  const navigate: NavigateFunction = useNavigate()
 
+  const goToTweetPage = async (): Promise<void> => {
+    navigate(`/tweet/${tweet._id}`);
+  }
   return (
     <>
-
-      <Link style={{ textDecoration: 'none', color: 'inherit' }}  to={`/tweet/${tweet._id}`}  onClick={() => setTweet(tweet)}>
-
-        <ListItem id={tweet._id} alignItems="flex-start">
+        <ListItem onClick={goToTweetPage} id={tweet._id} alignItems="flex-start">
           <ListItemAvatar>
-            <Avatar src="https://i.pinimg.com/originals/3d/14/bf/3d14bf9a9325bb78d40bb80ed3a571a2.png" />
+            <Avatar src={Array.isArray(tweet.tweetOwner) && tweet.tweetOwner.length > 0 && 'image' in tweet.tweetOwner[0]
+            ? tweet.tweetOwner[0].image : "https://i.pinimg.com/originals/3d/14/bf/3d14bf9a9325bb78d40bb80ed3a571a2.png"}/>
           </ListItemAvatar>
           <ListItemText sx={{ paddingTop: 4, paddingLeft: 4 }}
             primary={<Fragment>
@@ -48,7 +50,6 @@ const TweetItem: FC<TweetProps> = ({ tweet }) => {
           {tweet?.likes.length + " likes"}
         </ListItem>
         <Divider />
-      </Link>
     </>
   );
 

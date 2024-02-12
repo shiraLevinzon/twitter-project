@@ -13,3 +13,10 @@ export const margeFilter = (tw: TweetDocument, user: UserDocument): boolean => {
      return Array.isArray(tw.tweetOwner) && tw.tweetOwner.length > 0 &&
           user.followers?.includes(tw.tweetOwner[0]._id) || false;
 }
+
+
+export const addTweet = () => {
+    
+}
+
+

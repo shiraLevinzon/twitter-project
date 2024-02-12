@@ -10,7 +10,7 @@ export const addUser = async (req: Request, res: Response): Promise<Response> =>
         .catch((error: Error) => {
             return { status: 400, body: error.message }
         });
-    return res.status(status).send(body);
+    return res.status(status).json(body);
 
 };
 

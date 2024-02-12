@@ -15,7 +15,7 @@ export const loginValidate = (req: Request, res: Response, next: NextFunction): 
   })
   const validate : ValidationResult = login.validate(req.body);
 
-  if (validate.error) return res.status(401).send(validate.error.message);
+  if (validate.error) return res.status(401).json(validate.error.message);
 
   next();
 

@@ -1,34 +1,30 @@
-import { FC, useContext, useEffect, useState } from 'react'
-import { useLocation, useParams } from 'react-router-dom';
-import { Avatar, Card, CardActions, CardContent, CardHeader, CardMedia, Checkbox, Collapse, Container, Divider, FormControlLabel, Grid, Icon, IconButton, IconButtonProps, List, Typography } from '@mui/material';
-import AddCommentIcon from '@mui/icons-material/AddComment';
-import TweetDocument from '../../../../types/tweet.type';
-import Favorite from '@mui/icons-material/Favorite';
-import { FavoriteBorder } from '@mui/icons-material';
-import DeleteIcon from '@mui/icons-material/Delete';
+import { FC, useContext, useEffect, useState } from 'react';
+import { Avatar, Card, CardActions, CardContent, CardHeader, Checkbox, Container, FormControlLabel, Grid, IconButton, List, Typography } from '@mui/material';
+import { AddComment, Favorite, FavoriteBorder, Delete } from '@mui/icons-material';
+//import DeleteIcon from '@mui/icons-material/Delete';
 import * as tweetFunction from "./Function";
 import { map } from 'lodash/fp';
 import { ToastContainer } from 'react-toastify';
 import { UserContext } from '../../context/UserContext';
 import TweetContext from '../../context/TweetContext';
 import * as React from 'react';
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
+import { DialogTitle, DialogContentText, DialogContent, DialogActions, Dialog, TextField, Button } from '@mui/material';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { Input } from './Types';
+import TweetDocument from '../../../../types/tweet.type';
+import { useParams } from 'react-router-dom';
+
 
 
 const Tweet: FC = () => {
+  const { id } = useParams<{ id: string }>();
   const { user } = useContext(UserContext);
   const { tweet, setTweet } = useContext(TweetContext);
   const [isChecked, setIsChecked] = useState<boolean>(false);
   const { register, handleSubmit, formState: { errors } } = useForm<Input>();
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState<boolean>(false);
+  //const [comments, setComments]= useState<Array<TweetDocument>>();
+  //const [tweet, setTweet]= useState();
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -39,9 +35,27 @@ const Tweet: FC = () => {
   };
 
 
+  useEffect(() => {
+    const fetchData = async (): Promise<void> => {
+      if (!id) {
+        console.error("Invalid or missing tweet ID");
+        return;
+      }
+
+      const tweetData: TweetDocument | null = await tweetFunction.getTweet(id).
+        catch((error: Error) => {
+          console.error("Error fetching tweet:", error);
+          return null;
+        });
+      setTweet(tweetData);
+    };
+
+    fetchData();
+  }, [id]);
 
   useEffect(() => {
-    tweet.likes.includes(user._id) ? setIsChecked(true) : setIsChecked(false);
+    //setComments(tweet.comments)    
+    tweet?.likes?.includes(user._id) ? setIsChecked(true) : setIsChecked(false);
   }, [tweet, user._id]);
 
 
@@ -52,22 +66,25 @@ const Tweet: FC = () => {
       await setTweet(await tweetFunction.updateLike(`addDislike/${tweet?._id}`))
   };
 
-  const addComment: SubmitHandler<Input> = async (comment: Input) => {
-    const newUpdateTweet = await tweetFunction.addComment(comment.tweetText, tweet._id);
+  const addComment: SubmitHandler<Input> = async (comment: Input) :Promise<void>=> {
+    const newUpdateTweet = await tweetFunction.addComment(comment.tweetText, tweet?._id);
     setTweet(newUpdateTweet);
     handleClose();
   }
+  const deleteTweet = async (): Promise<void> => {
+
+  };
   return (
     <Container sx={{ paddingTop: 16 }}>
       <Card >
 
-        <CardHeader
+        <CardHeader sx={{ fontSize: 33 }}
           avatar={
-            <Avatar
-              src="https://i.pinimg.com/originals/3d/14/bf/3d14bf9a9325bb78d40bb80ed3a571a2.png"
-              sx={{ width: 56, height: 56 }} />
+            <Avatar src={tweet?.tweetOwner?.image} />
           }
-          title={user.userName}
+          title={<Typography variant="h6" component="div">
+            @{tweet?.tweetOwner?.userName}
+          </Typography>}
         />
         <CardContent>
           <Typography variant="h5" component="div">
@@ -78,16 +95,16 @@ const Tweet: FC = () => {
           <FormControlLabel
             value="bottom"
             control={<Checkbox checked={isChecked} onChange={updateLike} color='warning' icon={<FavoriteBorder />} checkedIcon={<Favorite />} />}
-            label={tweet?.likes.length + " likes"}
+            label={tweet?.likes?.length + " likes"}
             labelPlacement="bottom"
           />
-          <IconButton>
-            <DeleteIcon fontSize='large' />
+          <IconButton onClick={deleteTweet}>
+            <Delete fontSize='large' />
           </IconButton>
 
           <React.Fragment>
             <IconButton onClick={handleClickOpen}>
-              <AddCommentIcon fontSize='large' />
+              <AddComment fontSize='large' />
             </IconButton>
             <Dialog
               sx={{ minWidth: 300 }}
