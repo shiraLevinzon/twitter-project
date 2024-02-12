@@ -3,13 +3,12 @@ import { FC, useContext, useEffect, useState } from "react";
 import { map } from "lodash/fp";
 import * as homeFunction from "./Function";
 import TweetDocument from "../../../../types/tweet.type";
-import { Button, Container, FormControlLabel, Grid, List, Radio, RadioGroup, TextField } from "@mui/material";
+import { Container, FormControlLabel, Grid, List, Radio, RadioGroup, TextField } from "@mui/material";
 import { FormControl } from "@mui/base";
 import SearchIcon from '@mui/icons-material/Search';
 import { filter } from "lodash/fp";
 import { UserContext } from "../../context/UserContext";
 import UserDocument from "../../../../types/user.type";
-import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { Query } from "./Types";
 import DialogAddTweet from "../../components/DialogAddTweet/Index";
 
@@ -72,7 +71,8 @@ const Home: FC = ({ }) => {
                         </RadioGroup>
                     </Grid>
                     <Grid item xs={3}>
-                        <TextField onChange={filterSearchChange} id="outlined-basic" label={<SearchIcon />} variant="outlined" ></TextField>
+                        <TextField onChange={filterSearchChange} id="outlined-basic" label={<SearchIcon />} color="warning"
+                            variant="outlined" ></TextField>
                     </Grid>
                     <Grid item xs={1}>
                         <DialogAddTweet kind='tweet' />

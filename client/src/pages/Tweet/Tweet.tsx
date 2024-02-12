@@ -74,11 +74,11 @@ const Tweet: FC = () => {
         <CardActions>
           
           <IconButton onClick={deleteTweet}>
-            <Delete  sx={{ color: orange[700] }} fontSize='large' />
+            <Delete fontSize='large' />
           </IconButton>
           
           <DialogAddTweet kind='comment' />
-          <FormControlLabel   sx={{ display: 'flex', justifyContent: 'flex-end' }}
+          <FormControlLabel sx={{ alignItems: 'end', width: '100%' }}
             value="bottom"
             control={<Checkbox checked={isChecked} onChange={updateLike} color='warning' icon={<FavoriteBorder fontSize='large' />} checkedIcon={<Favorite fontSize='large' />} />}
             label={tweet?.likes?.length + " likes"}

@@ -36,7 +36,7 @@ const DialogAddTweet: FC<DialogProps> = ({ kind }) => {
   return (
     <React.Fragment>
       <IconButton onClick={handleClickOpen}>
-        <AddComment   sx={{ color: orange[700] }} fontSize='large' />
+        <AddComment fontSize='large' />
       </IconButton>
       <Dialog
         sx={{ minWidth: 300 }}
