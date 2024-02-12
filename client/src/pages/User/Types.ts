@@ -1,5 +1,7 @@
-import TweetDocument from '../../../../types/tweet.type';
+import UserDocument from "../../../../types/user.type";
 
-export type CommentProps= {
-  tweet: TweetDocument;
-  }
+// export type UserProps = {
+//   user: UserDocument | null;
+// }
+
+export {};

@@ -6,6 +6,7 @@ import { Typography } from '@mui/material';
 import { Link, NavigateFunction, useNavigate } from 'react-router-dom';
 import { UserContext } from '../../context/UserContext';
 import TweetContext from '../../context/TweetContext';
+import { orange } from '@mui/material/colors';
 
 
 const TweetItem: FC<TweetProps> = ({ tweet }) => {
@@ -15,12 +16,12 @@ const TweetItem: FC<TweetProps> = ({ tweet }) => {
   }
   return (
     <>
-        <ListItem onClick={goToTweetPage} id={tweet._id} alignItems="flex-start">
-          <ListItemAvatar>
+        <ListItem id={tweet._id} alignItems="flex-start">
+          <ListItemAvatar onClick={()=>{navigate(`/UserProfile`, {state: {user: tweet.tweetOwner}})}}>
             <Avatar src={Array.isArray(tweet.tweetOwner) && tweet.tweetOwner.length > 0 && 'image' in tweet.tweetOwner[0]
             ? tweet.tweetOwner[0].image : "https://i.pinimg.com/originals/3d/14/bf/3d14bf9a9325bb78d40bb80ed3a571a2.png"}/>
           </ListItemAvatar>
-          <ListItemText sx={{ paddingTop: 4, paddingLeft: 4 }}
+          <ListItemText onClick={goToTweetPage} sx={{ paddingTop: 4, paddingLeft: 4 }}
             primary={<Fragment>
               <Typography
                 sx={{ display: 'inline' }}
