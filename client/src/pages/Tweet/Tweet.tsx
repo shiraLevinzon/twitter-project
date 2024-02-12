@@ -10,6 +10,7 @@ import TweetContext from '../../context/TweetContext';
 import TweetDocument from '../../../../types/tweet.type';
 import { useParams } from 'react-router-dom';
 import DialogAddTweet from "../../components/DialogAddTweet/Index";
+import { orange } from '@mui/material/colors';
 
 
 
@@ -18,9 +19,6 @@ const Tweet: FC = () => {
   const { user } = useContext(UserContext);
   const { tweet, setTweet } = useContext(TweetContext);
   const [isChecked, setIsChecked] = useState<boolean>(false);
-  //const [comments, setComments]= useState<Array<TweetDocument>>();
-  //const [tweet, setTweet]= useState();
-
 
   useEffect(() => {
     const fetchData = async (): Promise<void> => {
@@ -45,16 +43,16 @@ const Tweet: FC = () => {
     tweet?.likes?.includes(user._id) ? setIsChecked(true) : setIsChecked(false);
   }, [tweet, user._id]);
 
-
-
   const updateLike = async (): Promise<void> => {
     setIsChecked(!isChecked);
-    !isChecked ? await setTweet(await tweetFunction.updateLike(`addLike/${tweet?._id}`)) :
-      await setTweet(await tweetFunction.updateLike(`addDislike/${tweet?._id}`))
+    const newUpdateTweet: TweetDocument | null = !isChecked ?
+      await tweetFunction.updateLike(`addLike/${tweet?._id}`) :
+      await tweetFunction.updateLike(`addDislike/${tweet?._id}`);
+    setTweet(newUpdateTweet)
   };
 
   const deleteTweet = async (): Promise<void> => {
-
+    tweetFunction.deleteTweet(tweet._id)
   };
   return (
     <Container sx={{ paddingTop: 16 }}>
@@ -73,18 +71,19 @@ const Tweet: FC = () => {
             <pre>{tweet?.text}</pre>
           </Typography>
         </CardContent>
-        <CardActions disableSpacing>
-          <FormControlLabel
-            value="bottom"
-            control={<Checkbox checked={isChecked} onChange={updateLike} color='warning' icon={<FavoriteBorder />} checkedIcon={<Favorite />} />}
-            label={tweet?.likes?.length + " likes"}
-            labelPlacement="bottom"
-          />
+        <CardActions>
+          
           <IconButton onClick={deleteTweet}>
-            <Delete fontSize='large' />
+            <Delete  sx={{ color: orange[700] }} fontSize='large' />
           </IconButton>
-          <DialogAddTweet kind='comment'/>
-
+          
+          <DialogAddTweet kind='comment' />
+          <FormControlLabel   sx={{ display: 'flex', justifyContent: 'flex-end' }}
+            value="bottom"
+            control={<Checkbox checked={isChecked} onChange={updateLike} color='warning' icon={<FavoriteBorder fontSize='large' />} checkedIcon={<Favorite fontSize='large' />} />}
+            label={tweet?.likes?.length + " likes"}
+            labelPlacement="top"
+          />
         </CardActions>
         <ToastContainer />
 

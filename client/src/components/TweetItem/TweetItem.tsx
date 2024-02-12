@@ -9,10 +9,7 @@ import TweetContext from '../../context/TweetContext';
 
 
 const TweetItem: FC<TweetProps> = ({ tweet }) => {
-  const isTweetOwnerValid: boolean = Array.isArray(tweet?.tweetOwner) && tweet.tweetOwner.length > 0;
-
   const navigate: NavigateFunction = useNavigate()
-
   const goToTweetPage = async (): Promise<void> => {
     navigate(`/tweet/${tweet._id}`);
   }

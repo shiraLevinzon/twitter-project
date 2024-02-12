@@ -13,26 +13,22 @@ export const submitForm = async (info: Input, navigate: NavigateFunction): Promi
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(info),
-        })
-        .catch(async (error: Error) => {
-            return null;
-        })
+        }).catch((error:Error) => {
+            toast.error(error.message, { position: 'top-right' });
+            return null
+        });
 
-
-    if (!response) {
-        toast.error("error", { position: 'top-right' });
-        return null;
-    }
-    else if (!response.ok) {
+    if (!response) return null;
+    if (!response.ok) {
         toast.error(await response.text(), { position: 'top-right' });
         return null;
     }
-    else {
-        const { user, token }: { user: UserDocument, token: string } = await response.json();
-        localStorage.setItem("token", token);
-        navigate('/home');
-        return user;
-    }
+
+    const { user, token }: { user: UserDocument, token: string } = await response.json();
+    localStorage.setItem("token", token);
+    navigate('/home');
+    return user;
+
 
 
 }
