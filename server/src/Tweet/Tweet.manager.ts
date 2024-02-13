@@ -5,8 +5,7 @@ import mongoose from "mongoose";
 import map from 'lodash/fp/map';
 import TweetDocument from "../../../types/tweet.type";
 import { DocTweetResponse, DocArrTweetResponse, DeleteResponse } from '../../../types/response.type';
-import { Role } from "../../../types/user.type";
-import { number } from "joi";
+import UserDocument, { Role } from "../../../types/user.type";
 
 export const addTweet = async (req: Request, userId: string): Promise<DocTweetResponse> => {
     const { body }: { body: TweetDocument } = req;
@@ -20,8 +19,8 @@ const deleteComments = (commentId: string) => {
     deleteTweetsAndComments(commentId)
 }
 const deleteTweetsAndComments = async (id: string): Promise<void> => {
-    const tweet: TweetDocument = await tweetRepository.getTweetById(id)
-
+    const tweet: TweetDocument = await tweetRepository.getTweetById(id);
+        
     map(deleteComments)(tweet.comments.toString());
     await tweetRepository.deleteTweet(tweet._id)
 }
@@ -30,20 +29,19 @@ const deleteTweetsAndComments = async (id: string): Promise<void> => {
 export const deleteTweet = async (req: Request, userId: string): Promise<DeleteResponse> => {
     const { id: tweetId }: { id?: string } = req.params;
 
-    const { role: userRole }: { role?: Role } = (await getUserById(userId)).body;
+    const { body: currentUser }: { body: UserDocument } = (await getUserById(userId));
     const { tweetOwner } = await tweetRepository.getTweetById(tweetId);
     
     const { role: ownerRole }: { role?: Role } = (await getUserById(tweetOwner._id.toString())).body;
 
-    const isDeletedByUser: boolean = userRole === "user" && tweetOwner._id.toString() !== userId;
-    const isDeleteByManager: boolean = userRole === 'manager' && ownerRole === 'manager';
+    const isDeletedByUser: boolean = currentUser.role === "user" && tweetOwner._id.toString() !== userId;
+    const isDeleteByManager: boolean = currentUser.role === 'manager' && ownerRole === 'manager' && currentUser._id==! tweetOwner._id;
 
     if (isDeletedByUser)
         throw new Error("user cant delete another user tweet");
 
     if (isDeleteByManager)
         throw new Error("manager cant delete another manager tweet");
-
 
     const session: mongoose.mongo.ClientSession = await mongoose.startSession();
     session.startTransaction();

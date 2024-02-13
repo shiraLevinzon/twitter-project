@@ -3,6 +3,8 @@ import { Input } from "./Types";
 import { NavigateFunction } from "react-router";
 
 export const submitForm  = async (info: Input, navigate: NavigateFunction) : Promise<void> => {
+    console.log(info);
+    
     const response : Response | null = await fetch('http://localhost:3001/api/v1/users/addUser', {
         method: 'POST',
         headers: {

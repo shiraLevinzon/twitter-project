@@ -7,12 +7,13 @@ import { ToastContainer } from 'react-toastify';
 import { UserContext } from '../../context/UserContext';
 import TweetContext from '../../context/TweetContext';
 import TweetDocument from '../../../../types/tweet.type';
-import { useParams } from 'react-router-dom';
+import { NavigateFunction, useNavigate, useParams } from 'react-router-dom';
 import DialogAddTweet from "../../components/DialogAddTweet/Index";
 
 
 
 const Tweet: FC = () => {
+  const navigate: NavigateFunction = useNavigate()
   const { id } = useParams<{ id: string }>();
   const { user } = useContext(UserContext);
   const { tweet, setTweet } = useContext(TweetContext);
@@ -55,7 +56,7 @@ const Tweet: FC = () => {
   return (
     <Container sx={{ paddingTop: 16 }}>
       <Card >
-        <CardHeader sx={{ fontSize: 33 }}
+        <CardHeader onClick={()=>{navigate(`/UserProfile`, {state: {user: tweet.tweetOwner}})}} sx={{ fontSize: 33 }}
           avatar={
             <Avatar src={tweet?.tweetOwner?.image} />
           }

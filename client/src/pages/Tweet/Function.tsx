@@ -41,8 +41,8 @@ export const deleteTweet = async (tweetId: string) => {
             toast.error(error.message, { position: 'top-right' });
             return null
         })
-    !response?.ok ? toast.error(await response?.text(), { position: 'top-right' }):
-    toast.success(await response?.text(), { position: 'top-right' });
+    response && !response.ok ? toast.error(await response?.text(), { position: 'top-right' }):
+    response && toast.success(await response?.text(), { position: 'top-right' });
 
 
 };

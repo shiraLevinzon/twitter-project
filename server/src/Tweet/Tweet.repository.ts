@@ -1,8 +1,11 @@
 import Tweet from "../db/Tweet.model";
 import TweetDocument from "../../../types/tweet.type";
 
-export const getAllTweets = async (query: Object): Promise<Array<TweetDocument>> => await Tweet.find(query)
-  .populate("comments").populate("tweetOwner");
+export const getAllTweets = async (query: Object): Promise<Array<TweetDocument>> => await Tweet.aggregate([
+  { $match: query },
+  { $lookup: { from: 'tweets', localField: 'comments', foreignField: '_id', as: 'comments' } },
+  { $lookup: { from: 'users', localField: 'tweetOwner', foreignField: '_id', as: 'tweetOwner' } }
+])
 
 export const getTweetById = async (id: string): Promise<TweetDocument> => await Tweet.findOne({ _id: id }).populate("comments").populate("tweetOwner");
 export const getTweetsByOwener = async (ownerId: string): Promise<Array<TweetDocument>> => await Tweet.find({ tweetOwner: ownerId })

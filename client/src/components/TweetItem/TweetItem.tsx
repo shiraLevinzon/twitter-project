@@ -12,13 +12,15 @@ import React from 'react';
 
 const TweetItem: FC<TweetProps> = ({ tweet }) => {
   const navigate: NavigateFunction = useNavigate()
+  console.log(tweet);
+  
   const goToTweetPage = async (): Promise<void> => {
     navigate(`/tweet/${tweet._id}`);
   }
   return (
     <>
         <ListItem id={tweet._id} alignItems="flex-start">
-          <ListItemAvatar onClick={()=>{navigate(`/UserProfile`, {state: {user: tweet.tweetOwner}})}}>
+          <ListItemAvatar onClick={()=>{navigate(`/UserProfile`, {state: {user: Array.isArray(tweet.tweetOwner) && tweet.tweetOwner.length > 0 &&tweet.tweetOwner[0]}})}}>
             <Avatar src={Array.isArray(tweet.tweetOwner) && tweet.tweetOwner.length > 0 && 'image' in tweet.tweetOwner[0]
             ? tweet.tweetOwner[0].image : "https://i.pinimg.com/originals/3d/14/bf/3d14bf9a9325bb78d40bb80ed3a571a2.png"}/>
           </ListItemAvatar>

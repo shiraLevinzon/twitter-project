@@ -12,7 +12,7 @@ import { orange } from '@mui/material/colors';
 
 
 
-const DialogAddTweet: FC<DialogProps> = ({ kind }) => {
+const DialogAddTweet: FC<DialogProps> = ({ kind , refetch}) => {
   const { tweet, setTweet } = useContext(TweetContext);
 
   const { register, handleSubmit, formState: { errors } } = useForm<Input>();
@@ -31,6 +31,8 @@ const DialogAddTweet: FC<DialogProps> = ({ kind }) => {
       await tweetFunction.addComment(comment.tweetText, tweet?._id);
     setTweet(newUpdateTweet);
     handleClose();
+    refetch && await refetch();
+
   }
 
   return (

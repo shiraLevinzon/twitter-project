@@ -11,8 +11,8 @@ import { ToastContainer } from 'react-toastify';
 const User: FC = () => {
 
   const location = useLocation();
-  const { user } = useContext(UserContext);//
-  const userProfile: UserDocument = location.state.user[0];
+  const { user, setUser } = useContext(UserContext);//
+  const userProfile: UserDocument = location.state.user;
   const [isFollow, setIsFollow] = useState<boolean>(false);
   const [role, setRole] = useState<string>("");
   const [isMyOwnProfile, setIsMyOwnProfile] = useState<boolean>(false);
@@ -25,11 +25,13 @@ const User: FC = () => {
 
   const updateFollow = async (): Promise<void> => {
 
-    const isSucsuus:boolean = isFollow ?
+    const newFixUser: UserDocument | null = isFollow ?
       await userFunction.updateFollow(`addUnfollow/${userProfile._id}`) :
       await userFunction.updateFollow(`addFollow/${userProfile._id}`);
 
-    isSucsuus && setIsFollow(!isFollow);
+    newFixUser && setIsFollow(!isFollow);
+    newFixUser && setUser(newFixUser);
+
   };
   const changeRole = async (): Promise<void> => {
     const futureRole: string = role === 'user' ? 'manager' : 'user';
@@ -48,9 +50,9 @@ const User: FC = () => {
                 <div className="ms-4 mt-5 d-flex flex-column" style={{ width: '150px' }}>
                   <MDBCardImage src={userProfile.image}
                     alt="Generic placeholder image" className="mt-4 mb-2 img-thumbnail" fluid style={{ borderRadius: 100, width: '150px', zIndex: '1' }} />
-                  <Button variant={isFollow ? "outlined" : "contained"}  color='warning'
+                  <Button variant={isFollow ? "outlined" : "contained"} color='warning'
                     onClick={updateFollow} style={{ height: '36px', overflow: 'visible' }}>
-                     {isFollow ? "UnFollow" : "Follow"}
+                    {isFollow ? "UnFollow" : "Follow"}
                   </Button>
                   {isMyOwnProfile && <Button onClick={changeRole} variant="text"
                     color="warning" style={{ height: '36px', overflow: 'visible' }}>
@@ -66,7 +68,7 @@ const User: FC = () => {
                 <div className="d-flex justify-content-end text-center py-1">
 
                   <div className="px-3">
-                    <MDBCardText className="mb-1 h5">10</MDBCardText>
+                    <MDBCardText className="mb-1 h5">-</MDBCardText>
                     <MDBCardText className="small text-muted mb-0">Tweets</MDBCardText>
                   </div>
                   <div>
@@ -89,7 +91,7 @@ const User: FC = () => {
           </MDBCol>
         </MDBRow>
       </MDBContainer>
-      <ToastContainer/>
+      <ToastContainer />
     </div>
 
   )
