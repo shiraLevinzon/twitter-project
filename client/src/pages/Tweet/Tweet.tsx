@@ -1,7 +1,6 @@
 import { FC, useContext, useEffect, useState } from 'react';
 import { Avatar, Card, CardActions, CardContent, CardHeader, Checkbox, Container, FormControlLabel, Grid, IconButton, List, Typography } from '@mui/material';
 import { Favorite, FavoriteBorder, Delete } from '@mui/icons-material';
-//import DeleteIcon from '@mui/icons-material/Delete';
 import * as tweetFunction from "./Function";
 import { map } from 'lodash/fp';
 import { ToastContainer } from 'react-toastify';
@@ -10,8 +9,6 @@ import TweetContext from '../../context/TweetContext';
 import TweetDocument from '../../../../types/tweet.type';
 import { useParams } from 'react-router-dom';
 import DialogAddTweet from "../../components/DialogAddTweet/Index";
-import { orange } from '@mui/material/colors';
-import React from 'react';
 
 
 
@@ -58,7 +55,6 @@ const Tweet: FC = () => {
   return (
     <Container sx={{ paddingTop: 16 }}>
       <Card >
-
         <CardHeader sx={{ fontSize: 33 }}
           avatar={
             <Avatar src={tweet?.tweetOwner?.image} />

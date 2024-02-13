@@ -1,12 +1,12 @@
 import { FC, useContext, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Container, Grid, Typography } from '@mui/material';
+import { Button, Container, Grid, Typography } from '@mui/material';
 import { MDBCol, MDBContainer, MDBRow, MDBCard, MDBCardText, MDBCardBody, MDBCardImage, MDBBtn, MDBTypography } from 'mdb-react-ui-kit';
 import UserDocument from '../../../../types/user.type';
 import { orange } from '@mui/material/colors';
 import { UserContext } from '../../context/UserContext';
 import * as userFunction from './Function';
-import React from 'react';
+import { ToastContainer } from 'react-toastify';
 
 const User: FC = () => {
 
@@ -14,20 +14,28 @@ const User: FC = () => {
   const { user } = useContext(UserContext);//
   const userProfile: UserDocument = location.state.user[0];
   const [isFollow, setIsFollow] = useState<boolean>(false);
+  const [role, setRole] = useState<string>("");
   const [isMyOwnProfile, setIsMyOwnProfile] = useState<boolean>(false);
 
   useEffect(() => {
-    user._id === userProfile._id ? setIsMyOwnProfile(true) : setIsMyOwnProfile(false)
-    user.followers.includes(userProfile._id) ? setIsFollow(true) : setIsFollow(false);
+    userProfile.role === 'user' ? setRole("user") : setRole("manager");
+    user._id === userProfile._id ? setIsMyOwnProfile(true) : setIsMyOwnProfile(false);
+    user?.followers?.includes(userProfile._id) ? setIsFollow(true) : setIsFollow(false);
   }, [user]);
 
   const updateFollow = async (): Promise<void> => {
 
-    const isSucsuus = isFollow ?
+    const isSucsuus:boolean = isFollow ?
       await userFunction.updateFollow(`addUnfollow/${userProfile._id}`) :
       await userFunction.updateFollow(`addFollow/${userProfile._id}`);
 
     isSucsuus && setIsFollow(!isFollow);
+  };
+  const changeRole = async (): Promise<void> => {
+    const futureRole: string = role === 'user' ? 'manager' : 'user';
+    const isSucsuus: boolean = await userFunction.changeRole(futureRole);
+    isSucsuus && setRole(futureRole);
+
   };
 
   return (
@@ -40,14 +48,14 @@ const User: FC = () => {
                 <div className="ms-4 mt-5 d-flex flex-column" style={{ width: '150px' }}>
                   <MDBCardImage src={userProfile.image}
                     alt="Generic placeholder image" className="mt-4 mb-2 img-thumbnail" fluid style={{ borderRadius: 100, width: '150px', zIndex: '1' }} />
-                  <MDBBtn onClick={updateFollow}
-                    outline color="dark" style={{ height: '36px', overflow: 'visible' }}>
-                    {isFollow ? "UnFollow" : "Follow"}
-                  </MDBBtn>
-                  <MDBBtn onClick={updateFollow}
-                    outline color="dark" style={{ height: '36px', overflow: 'visible' }}>
-                    {isFollow ? "UnFollow" : "Follow"}
-                  </MDBBtn>
+                  <Button variant={isFollow ? "outlined" : "contained"}  color='warning'
+                    onClick={updateFollow} style={{ height: '36px', overflow: 'visible' }}>
+                     {isFollow ? "UnFollow" : "Follow"}
+                  </Button>
+                  {isMyOwnProfile && <Button onClick={changeRole} variant="text"
+                    color="warning" style={{ height: '36px', overflow: 'visible' }}>
+                    Change Role
+                  </Button>}
                 </div>
                 <div className="ms-3" style={{ marginTop: '130px' }}>
                   <MDBTypography tag="h5">{userProfile.userName}</MDBTypography>
@@ -73,7 +81,7 @@ const User: FC = () => {
                   <div className="p-4" style={{ backgroundColor: '#f8f9fa' }}>
                     <MDBCardText className="font-italic mb-1"><strong>Email: </strong>{userProfile.email}</MDBCardText>
                     <MDBCardText className="font-italic mb-1"><strong>Join In: </strong> {userProfile.dateCreated?.toString()}</MDBCardText>
-                    <MDBCardText className="font-italic mb-0"><strong>Role: </strong>{userProfile.role}</MDBCardText>
+                    <MDBCardText className="font-italic mb-0"><strong>Role: </strong>{role}</MDBCardText>
                   </div>
                 </div>
               </MDBCardBody>
@@ -81,6 +89,7 @@ const User: FC = () => {
           </MDBCol>
         </MDBRow>
       </MDBContainer>
+      <ToastContainer/>
     </div>
 
   )

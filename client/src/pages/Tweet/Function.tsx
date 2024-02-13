@@ -2,7 +2,6 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import TweetDocument from "../../../../types/tweet.type";
 import Comment from "../../components/Comment/Index";
-import React from "react";
 
 export const updateLike = async (route: string): Promise<TweetDocument | null> => {
     const token: string | null = localStorage.getItem("token");
