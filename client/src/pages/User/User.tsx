@@ -1,24 +1,36 @@
-import React, { FC, useContext, useEffect, useState } from 'react';
-import { Image } from 'antd';
+import { FC, useContext, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Container, Grid, Typography } from '@mui/material';
 import { MDBCol, MDBContainer, MDBRow, MDBCard, MDBCardText, MDBCardBody, MDBCardImage, MDBBtn, MDBTypography } from 'mdb-react-ui-kit';
 import UserDocument from '../../../../types/user.type';
 import { orange } from '@mui/material/colors';
 import { UserContext } from '../../context/UserContext';
+import * as userFunction from './Function';
 
 const User: FC = () => {
 
   const location = useLocation();
-  const {user}= useContext(UserContext)
-  const userProfile: UserDocument=location.state.user[0];
-  const [isFollow, setIsFollow] = useState(false);
-  useEffect(() => {  
+  const { user } = useContext(UserContext);//
+  const userProfile: UserDocument = location.state.user[0];
+  const [isFollow, setIsFollow] = useState<boolean>(false);
+  const [isMyOwnProfile, setIsMyOwnProfile] = useState<boolean>(false);
+
+  useEffect(() => {
+    user._id === userProfile._id ? setIsMyOwnProfile(true) : setIsMyOwnProfile(false)
     user.followers.includes(userProfile._id) ? setIsFollow(true) : setIsFollow(false);
   }, [user]);
 
+  const updateFollow = async (): Promise<void> => {
+
+    const isSucsuus = isFollow ?
+      await userFunction.updateFollow(`addUnfollow/${userProfile._id}`) :
+      await userFunction.updateFollow(`addFollow/${userProfile._id}`);
+
+    isSucsuus && setIsFollow(!isFollow);
+  };
+
   return (
-      <div className="gradient-custom-2" >
+    <div className="gradient-custom-2">
       <MDBContainer className="py-5 h-100">
         <MDBRow className="justify-content-center align-items-center h-100">
           <MDBCol lg="9" xl="7">
@@ -26,9 +38,14 @@ const User: FC = () => {
               <div className="rounded-top text-white d-flex flex-row" style={{ backgroundColor: orange[300], height: '200px' }}>
                 <div className="ms-4 mt-5 d-flex flex-column" style={{ width: '150px' }}>
                   <MDBCardImage src={userProfile.image}
-                    alt="Generic placeholder image" className="mt-4 mb-2 img-thumbnail" fluid style={{ borderRadius:100 ,width: '150px', zIndex: '1' }} />
-                  <MDBBtn outline color="dark" style={{height: '36px', overflow: 'visible'}}>
-                    {isFollow? "UnFollow": "Follow"}
+                    alt="Generic placeholder image" className="mt-4 mb-2 img-thumbnail" fluid style={{ borderRadius: 100, width: '150px', zIndex: '1' }} />
+                  <MDBBtn onClick={updateFollow}
+                    outline color="dark" style={{ height: '36px', overflow: 'visible' }}>
+                    {isFollow ? "UnFollow" : "Follow"}
+                  </MDBBtn>
+                  <MDBBtn onClick={updateFollow}
+                    outline color="dark" style={{ height: '36px', overflow: 'visible' }}>
+                    {isFollow ? "UnFollow" : "Follow"}
                   </MDBBtn>
                 </div>
                 <div className="ms-3" style={{ marginTop: '130px' }}>
@@ -38,7 +55,7 @@ const User: FC = () => {
               </div>
               <div className="p-4 text-black" style={{ backgroundColor: '#f8f9fa' }}>
                 <div className="d-flex justify-content-end text-center py-1">
-                  
+
                   <div className="px-3">
                     <MDBCardText className="mb-1 h5">10</MDBCardText>
                     <MDBCardText className="small text-muted mb-0">Tweets</MDBCardText>
@@ -65,7 +82,7 @@ const User: FC = () => {
       </MDBContainer>
     </div>
 
-   )
+  )
 }
 
 export { User }
