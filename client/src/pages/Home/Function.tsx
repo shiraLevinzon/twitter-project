@@ -1,3 +1,4 @@
+import React from "react";
 import TweetDocument from "../../../../types/tweet.type";
 import UserDocument from "../../../../types/user.type";
 import TweetItem from "../../components/TweetItem/Index";

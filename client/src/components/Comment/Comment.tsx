@@ -3,7 +3,6 @@ import { CommentProps } from './Types'
 import { Card, CardContent, Container, Typography } from '@mui/material'
 import { Link, NavigateFunction, useNavigate } from 'react-router-dom'
 import TweetContext from '../../context/TweetContext'
-import { log } from 'console'
 
 const Comment: FC<CommentProps> = ({ tweet }) => {
   const navigate: NavigateFunction = useNavigate()

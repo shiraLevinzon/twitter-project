@@ -7,6 +7,7 @@ import { Link, NavigateFunction, useNavigate } from 'react-router-dom';
 import { UserContext } from '../../context/UserContext';
 import TweetContext from '../../context/TweetContext';
 import { orange } from '@mui/material/colors';
+import React from 'react';
 
 
 const TweetItem: FC<TweetProps> = ({ tweet }) => {

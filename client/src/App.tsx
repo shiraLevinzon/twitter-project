@@ -6,6 +6,7 @@ import { UserContext } from './context/UserContext';
 import TweetContext from './context/TweetContext';
 import AppRoutes from './routes/AppRoutes';
 import UserDocument from '../../types/user.type';
+import React from 'react';
 
 
 const queryClient: QueryClient = new QueryClient();

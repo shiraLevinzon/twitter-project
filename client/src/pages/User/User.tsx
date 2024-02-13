@@ -6,6 +6,7 @@ import UserDocument from '../../../../types/user.type';
 import { orange } from '@mui/material/colors';
 import { UserContext } from '../../context/UserContext';
 import * as userFunction from './Function';
+import React from 'react';
 
 const User: FC = () => {
 

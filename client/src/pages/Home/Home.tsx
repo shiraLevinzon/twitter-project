@@ -11,6 +11,7 @@ import { UserContext } from "../../context/UserContext";
 import UserDocument from "../../../../types/user.type";
 import { Query } from "./Types";
 import DialogAddTweet from "../../components/DialogAddTweet/Index";
+import React from "react";
 
 const Home: FC = ({ }) => {
     const { user }: { user: UserDocument } = useContext(UserContext);
