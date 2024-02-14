@@ -13,6 +13,7 @@ import { Query } from "./Types";
 import DialogAddTweet from "../../components/DialogAddTweet/Index";
 import React from "react";
 import { NavigateFunction, useNavigate } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 
 const Home: FC = ({ }) => {
     const navigate: NavigateFunction = useNavigate()
@@ -104,6 +105,7 @@ const Home: FC = ({ }) => {
                 )}
 
             </Container>
+            <ToastContainer />
 
         </>
     );

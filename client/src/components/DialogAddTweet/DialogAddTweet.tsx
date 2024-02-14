@@ -55,7 +55,7 @@ const DialogAddTweet: FC<DialogProps> = ({ kind , refetch}) => {
             Add a {kind} that conforms to the site's standard, inappropriate comments will be deleted
           </DialogContentText>
           <TextField  {...register("tweetText", { required: "tweetText is required." })}
-            autoFocus required margin="dense" id="tweetText" name="tweetText" label="Your Comment" type="text" fullWidth variant="standard"
+            autoFocus required margin="dense" id="tweetText" name="tweetText" label={`Your ${kind}`} type="text" fullWidth variant="standard"
           />
         </DialogContent>
         <DialogActions>

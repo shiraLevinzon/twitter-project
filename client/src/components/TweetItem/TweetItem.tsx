@@ -11,9 +11,7 @@ import React from 'react';
 
 
 const TweetItem: FC<TweetProps> = ({ tweet }) => {
-  const navigate: NavigateFunction = useNavigate()
-  console.log(tweet);
-  
+  const navigate: NavigateFunction = useNavigate();  
   const goToTweetPage = async (): Promise<void> => {
     navigate(`/tweet/${tweet._id}`);
   }

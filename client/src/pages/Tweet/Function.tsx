@@ -2,6 +2,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import TweetDocument from "../../../../types/tweet.type";
 import Comment from "../../components/Comment/Index";
+import { NavigateFunction } from "react-router-dom";
 
 export const updateLike = async (route: string): Promise<TweetDocument | null> => {
     const token: string | null = localStorage.getItem("token");
@@ -42,7 +43,8 @@ export const deleteTweet = async (tweetId: string) => {
             return null
         })
     response && !response.ok ? toast.error(await response?.text(), { position: 'top-right' }):
-    response && toast.success(await response?.text(), { position: 'top-right' });
+    response && await toast.success(await response?.text(), { position: 'top-right' });
+    
 
 
 };

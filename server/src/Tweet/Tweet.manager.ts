@@ -16,12 +16,18 @@ export const addTweet = async (req: Request, userId: string): Promise<DocTweetRe
     };
 }
 const deleteComments = (commentId: string) => {
+    console.log(commentId.toString());
+    
     deleteTweetsAndComments(commentId)
 }
+const castToString= (comment: TweetDocument): string => comment._id.toString(); 
+
 const deleteTweetsAndComments = async (id: string): Promise<void> => {
+
     const tweet: TweetDocument = await tweetRepository.getTweetById(id);
-        
-    map(deleteComments)(tweet.comments.toString());
+    const commentIds: Array<string> = map(castToString)(tweet.comments as TweetDocument[]);
+
+    map(deleteComments)(commentIds);
     await tweetRepository.deleteTweet(tweet._id)
 }
 
@@ -117,27 +123,6 @@ export const getAllTweets = async (req: Request): Promise<DocArrTweetResponse> =
         body: tweets
     }
 }
-
-// export const getTweetsByDate = async (req: Request): Promise<DocArrTweetResponse> => {
-//     const { date }: { date?: string } = req.query;
-//     const tweets: Array<TweetDocument> = await tweetRepository.getTweetsByDate(new Date(date.toString()));
-//     return {
-//         status: 200,
-//         body: tweets
-//     }
-// }
-// export const getTweetsByLikes = async (req: Request): Promise<DocArrTweetResponse> => {
-//     const { amount }: { amount?: string } = req.query;
-//     const amountNumber: number = +amount;
-//     if (isNaN(amountNumber)) throw new Error('Invalid amount');
-
-//     const tweets: Array<TweetDocument> = await tweetRepository.getTweetsByLikes(amountNumber);
-//     return {
-//         status: 200,
-//         body: tweets
-//     }
-
-// };
 export const getTweetsByOwener = async (req: Request): Promise<DocArrTweetResponse> => {
     const { owner }: { owner?: string } = req.query;
     const tweets: Array<TweetDocument> = await tweetRepository.getTweetsByOwener(owner.toString());

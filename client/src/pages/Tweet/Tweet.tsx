@@ -38,7 +38,6 @@ const Tweet: FC = () => {
   }, [id]);
 
   useEffect(() => {
-    //setComments(tweet.comments)    
     tweet?.likes?.includes(user._id) ? setIsChecked(true) : setIsChecked(false);
   }, [tweet, user._id]);
 
@@ -51,7 +50,8 @@ const Tweet: FC = () => {
   };
 
   const deleteTweet = async (): Promise<void> => {
-    tweetFunction.deleteTweet(tweet._id)
+    tweetFunction.deleteTweet(tweet._id);
+    navigate('/home');
   };
   return (
     <Container sx={{ paddingTop: 16 }}>
