@@ -1,12 +1,12 @@
 import { createContext, useState } from 'react';
 import './App.css';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { UserContext } from './context/UserContext';
-import TweetContext from './context/TweetContext';
+import { UserProvider } from './context/UserContext';
+import {TweetProvider} from './context/TweetContext';
 import AppRoutes from './routes/AppRoutes';
 import UserDocument from '../../types/user.type';
 import React from 'react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 
 const queryClient: QueryClient = new QueryClient();
@@ -19,13 +19,13 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <TweetContext.Provider value={{ tweet, setTweet }}>
-        <UserContext.Provider value={{ user, setUser }}>
+      <TweetProvider>
+        <UserProvider>
           <BrowserRouter>
             <AppRoutes />
           </BrowserRouter>
-        </UserContext.Provider>
-      </TweetContext.Provider>
+        </UserProvider>
+      </TweetProvider>
     </QueryClientProvider>
   );
 }

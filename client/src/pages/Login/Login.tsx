@@ -11,23 +11,39 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { NavigateFunction, useNavigate } from "react-router-dom";
-import { submitForm } from "./Function";
+import { sucssesFetchActions } from "./Function";
 import UserDocument from "../../../../types/user.type";
 import { ErrorMessage } from "@hookform/error-message";
-import { UserContext } from "../../context/UserContext";
+import { useUser } from "../../context/UserContext";
 import { ToastContainer, toast } from "react-toastify";
 import React from "react";
+import { useMutation } from "@tanstack/react-query";
+import { addLogin } from "../../services/UserServices";
 
 
-const Login: FC = ({}) => {
-    const { setUser }: { setUser: React.Dispatch<React.SetStateAction<UserDocument| null>> } = useContext(UserContext);
+const Login: FC = ({ }) => {
+    const { setUser }: { setUser: React.Dispatch<React.SetStateAction<UserDocument>> } = useUser();
     const { register, handleSubmit, formState: { errors } } = useForm<Input>();
-
     const navigate: NavigateFunction = useNavigate();
-    const submitLoginForm: SubmitHandler<Input> = async (info: Input) => {
-        const user: UserDocument |null = await submitForm(info, navigate);
-        setUser(user)
-    }
+
+
+
+    const mutation = useMutation({
+        mutationFn: (info: Input) => {            
+            return addLogin(info);
+        },
+        onSuccess: async (data: Response) => {
+            data.ok ? sucssesFetchActions(data, setUser, navigate) :
+                toast.error(await data.text(), { position: 'top-right' })
+        },
+        onError: () => {
+            toast.error("error", { position: 'top-right' })
+        },
+    })
+
+    // const submitLoginForm: SubmitHandler<Input> = async (info: Input) => {
+    //     mutation.mutate(info);
+    // }
 
     return <Container component="main" maxWidth="xs">
         <CssBaseline />
@@ -45,7 +61,9 @@ const Login: FC = ({}) => {
             <Typography component="h1" variant="h5">
                 Sign in
             </Typography>
-            <Box component="form" onSubmit={handleSubmit(submitLoginForm)} noValidate sx={{ mt: 1 }}>
+            <Box component="form" onSubmit={handleSubmit((info) => {
+                 mutation.mutate(info);
+            })} noValidate sx={{ mt: 1 }}>
                 <TextField {...register("email", { required: "Email is required." })}
                     margin="normal"
                     required

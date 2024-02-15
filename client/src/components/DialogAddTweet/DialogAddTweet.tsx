@@ -2,51 +2,48 @@ import React, { FC, useContext, useState } from 'react'
 import { DialogProps } from './Types'
 import { IconButton } from '@mui/material';
 import { AddComment } from '@mui/icons-material';
-import * as tweetFunction from "./Function";
-import TweetContext from '../../context/TweetContext';
+import { useTweet } from '../../context/TweetContext';
 import { DialogTitle, DialogContentText, DialogContent, DialogActions, Dialog, TextField, Button } from '@mui/material';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { Input } from './Types';
-import TweetDocument from '../../../../types/tweet.type';
-import { orange } from '@mui/material/colors';
+import { addCommetOrTweet, closeDialog, openDialog, sucssesFetchActions } from './Function';
+import { toast } from 'react-toastify';
+import { useMutation } from '@tanstack/react-query';
 
 
 
-const DialogAddTweet: FC<DialogProps> = ({ kind , refetch}) => {
-  const { tweet, setTweet } = useContext(TweetContext);
+const DialogAddTweet: FC<DialogProps> = ({ kind, refetch }) => {
+  const { tweet, setTweet } = useTweet();
 
   const { register, handleSubmit, formState: { errors } } = useForm<Input>();
   const [open, setOpen] = useState<boolean>(false);
 
-  const handleClickOpen = (): void => {
-    setOpen(true);
-  };
-
-  const handleClose = (): void => {
-    setOpen(false);
-  };
-  const addCommetOrTweet: SubmitHandler<Input> = async (comment: Input): Promise<void> => {
-    const newUpdateTweet: TweetDocument | null = kind === 'tweet' ?
-      await tweetFunction.addTweet(comment.tweetText) :
-      await tweetFunction.addComment(comment.tweetText, tweet?._id);
-    setTweet(newUpdateTweet);
-    handleClose();
-    refetch && await refetch();
-
-  }
+  const mutation = useMutation({
+    mutationFn: (info: Input) => {            
+        return addCommetOrTweet(info, kind,tweet);
+    },
+    onSuccess: async (data: Response) => {
+        data.ok ? sucssesFetchActions(setTweet,setOpen,refetch,data) :
+            toast.error(await data.text(), { position: 'top-right' })
+    },
+    onError: () => {
+        toast.error("error", { position: 'top-right' })
+    },
+})
 
   return (
     <React.Fragment>
-      <IconButton onClick={handleClickOpen}>
+      <IconButton onClick={()=>{openDialog(setOpen)}}>
         <AddComment fontSize='large' />
       </IconButton>
       <Dialog
         sx={{ minWidth: 300 }}
         open={open}
-        onClose={handleClose}
+        onClose={()=>{closeDialog(setOpen)}}
         PaperProps={{
           component: 'form',
-          onSubmit: handleSubmit(addCommetOrTweet)
+          onSubmit:handleSubmit((info: Input) => {
+             mutation.mutate(info);})
         }}
       >
         <DialogTitle>Add {kind}</DialogTitle>
@@ -59,7 +56,7 @@ const DialogAddTweet: FC<DialogProps> = ({ kind , refetch}) => {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
+          <Button onClick={()=>{closeDialog(setOpen)}}>Cancel</Button>
           <Button type="submit">Add</Button>
         </DialogActions>
       </Dialog>

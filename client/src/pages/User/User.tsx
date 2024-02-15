@@ -1,44 +1,57 @@
-import { FC, useContext, useEffect, useState } from 'react';
+import { Dispatch, FC, SetStateAction, useContext, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Button, Container, Grid, Typography } from '@mui/material';
 import { MDBCol, MDBContainer, MDBRow, MDBCard, MDBCardText, MDBCardBody, MDBCardImage, MDBBtn, MDBTypography } from 'mdb-react-ui-kit';
 import UserDocument from '../../../../types/user.type';
 import { orange } from '@mui/material/colors';
-import { UserContext } from '../../context/UserContext';
-import * as userFunction from './Function';
-import { ToastContainer } from 'react-toastify';
+import { useUser } from '../../context/UserContext';
+import {setUserProfile, sucssesUpdateFollowActions} from './Function';
+import { ToastContainer, toast } from 'react-toastify';
+import { useMutation } from '@tanstack/react-query';
+import { changeRole, updateFollow } from '../../services/UserServices';
 
 const User: FC = () => {
 
   const location = useLocation();
-  const { user, setUser } = useContext(UserContext);//
+  const { user, setUser } :{user: UserDocument, setUser: Dispatch<SetStateAction<UserDocument>>} = useUser();//
   const userProfile: UserDocument = location.state.user;
   const [isFollow, setIsFollow] = useState<boolean>(false);
   const [role, setRole] = useState<string>("");
   const [isMyOwnProfile, setIsMyOwnProfile] = useState<boolean>(false);
 
   useEffect(() => {
-    userProfile.role === 'user' ? setRole("user") : setRole("manager");
-    user._id === userProfile._id ? setIsMyOwnProfile(true) : setIsMyOwnProfile(false);
-    user?.followers?.includes(userProfile._id) ? setIsFollow(true) : setIsFollow(false);
+    setUserProfile(userProfile, user, setRole, setIsMyOwnProfile, setIsFollow)
   }, [user]);
 
-  const updateFollow = async (): Promise<void> => {
+  const mutationUpdateFollow = useMutation({
+    mutationFn: () => {
+      return updateFollow(userProfile._id, isFollow);
+    },
+    onSuccess: async (data: Response) => {
+      data.ok ? sucssesUpdateFollowActions(setIsFollow,isFollow,setUser,data) :
+      toast.error(await data.text(), { position: 'top-right' }) 
+      
+    },
+    onError: () => {
+      toast.error("error", { position: 'top-right' })
+    },
+  })
 
-    const newFixUser: UserDocument | null = isFollow ?
-      await userFunction.updateFollow(`addUnfollow/${userProfile._id}`) :
-      await userFunction.updateFollow(`addFollow/${userProfile._id}`);
+  const mutationChangeRole = useMutation({
+    mutationFn: () => {
+      return changeRole(role);
+    },
+    onSuccess: async (data: Response) => {
+      const futureRole: string = role === 'user' ? 'manager' : 'user';
+      
+      data.ok ? setRole(futureRole) :
+      toast.error(await data.text(), { position: 'top-right' }) 
+    },
+    onError: () => {
+      toast.error("error", { position: 'top-right' })
+    },
+  })
 
-    newFixUser && setIsFollow(!isFollow);
-    newFixUser && setUser(newFixUser);
-
-  };
-  const changeRole = async (): Promise<void> => {
-    const futureRole: string = role === 'user' ? 'manager' : 'user';
-    const isSucsuus: boolean = await userFunction.changeRole(futureRole);
-    isSucsuus && setRole(futureRole);
-
-  };
 
   return (
     <div className="gradient-custom-2">
@@ -51,10 +64,10 @@ const User: FC = () => {
                   <MDBCardImage src={userProfile.image}
                     alt="Generic placeholder image" className="mt-4 mb-2 img-thumbnail" fluid style={{ borderRadius: 100, width: '150px', zIndex: '1' }} />
                   <Button variant={isFollow ? "outlined" : "contained"} color='warning'
-                    onClick={updateFollow} style={{ height: '36px', overflow: 'visible' }}>
+                    onClick={()=>{mutationUpdateFollow.mutate()}} style={{ height: '36px', overflow: 'visible' }}>
                     {isFollow ? "UnFollow" : "Follow"}
                   </Button>
-                  {isMyOwnProfile && <Button onClick={changeRole} variant="text"
+                  {isMyOwnProfile && <Button onClick={()=>{mutationChangeRole.mutate()}} variant="text"
                     color="warning" style={{ height: '36px', overflow: 'visible' }}>
                     Change Role
                   </Button>}

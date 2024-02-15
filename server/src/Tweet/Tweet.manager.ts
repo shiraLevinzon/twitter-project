@@ -3,13 +3,13 @@ import * as tweetRepository from './Tweet.repository'
 import { getUserById } from '../User/User.manager'
 import mongoose from "mongoose";
 import map from 'lodash/fp/map';
-import TweetDocument from "../../../types/tweet.type";
+import TweetDocument, { SortOption, Tweet, TweetPopulated } from "../../../types/tweet.type";
 import { DocTweetResponse, DocArrTweetResponse, DeleteResponse } from '../../../types/response.type';
 import UserDocument, { Role } from "../../../types/user.type";
 
 export const addTweet = async (req: Request, userId: string): Promise<DocTweetResponse> => {
     const { body }: { body: TweetDocument } = req;
-    const newTweet: TweetDocument = await tweetRepository.addTweet(body, userId);
+    const newTweet: TweetPopulated = await tweetRepository.addTweet(body, userId);
     return {
         status: 201,
         body: newTweet
@@ -20,15 +20,15 @@ const deleteComments = (commentId: string) => {
     
     deleteTweetsAndComments(commentId)
 }
-const castToString= (comment: TweetDocument): string => comment._id.toString(); 
+const castToString= (comment: Tweet): string => comment._id.toString(); 
 
 const deleteTweetsAndComments = async (id: string): Promise<void> => {
 
-    const tweet: TweetDocument = await tweetRepository.getTweetById(id);
-    const commentIds: Array<string> = map(castToString)(tweet.comments as TweetDocument[]);
+    const tweet: TweetPopulated = await tweetRepository.getTweetById(id);
+    const commentIds: Array<string> = map(castToString)(tweet.comments);
 
     map(deleteComments)(commentIds);
-    await tweetRepository.deleteTweet(tweet._id)
+    await tweetRepository.deleteTweet(tweet._id.toString())
 }
 
 
@@ -71,7 +71,7 @@ export const deleteTweet = async (req: Request, userId: string): Promise<DeleteR
 }
 export const updateComments = async (req: Request, newTweetId: string): Promise<DocTweetResponse> => {
     const { id: fatherTweet }: { id?: string } = req.params;
-    const res: TweetDocument = await tweetRepository.updateComments(fatherTweet, newTweetId);
+    const res: TweetPopulated = await tweetRepository.updateComments(fatherTweet, newTweetId);
     return {
         status: 200,
         body: res
@@ -80,7 +80,7 @@ export const updateComments = async (req: Request, newTweetId: string): Promise<
 }
 export const updateLikes = async (req: Request, userId: string): Promise<DocTweetResponse> => {
     const { id: fatherTweet }: { id?: string } = req.params;
-    const res: TweetDocument = await tweetRepository.updateLikes(fatherTweet, userId);
+    const res: TweetPopulated = await tweetRepository.updateLikes(fatherTweet, userId);
     return {
         status: 200,
         body: res
@@ -89,7 +89,7 @@ export const updateLikes = async (req: Request, userId: string): Promise<DocTwee
 }
 export const updateDislikes = async (req: Request, userId: string): Promise<DocTweetResponse> => {
     const { id: fatherTweet }: { id?: string } = req.params;
-    const res: TweetDocument = await tweetRepository.updateDislikes(fatherTweet, userId);
+    const res: TweetPopulated = await tweetRepository.updateDislikes(fatherTweet, userId);
     return {
         status: 200,
         body: res
@@ -99,25 +99,25 @@ export const updateDislikes = async (req: Request, userId: string): Promise<DocT
 
 export const getTweetById = async (req: Request): Promise<DocTweetResponse> => {
     const { id: tweetId }: { id?: string } = req.params;
-    const tweet: TweetDocument = await tweetRepository.getTweetById(tweetId);
+    const tweet: TweetPopulated = await tweetRepository.getTweetById(tweetId);
     return {
         status: 200,
         body: tweet
     }
 }
-const getTweetsSort = async (sortOption: string, query: Object,page: number, pageSize: number): Promise<Array<TweetDocument>> => {
-    if (sortOption === 'date') return await tweetRepository.getTweetsByDate(page, pageSize,query);
-    else if (sortOption === 'likes') return await tweetRepository.getTweetsByLikes(page, pageSize,query);
+const getTweetsSort = async (sortOption: SortOption, query: Object,page: number, pageSize: number): Promise<Array<TweetPopulated>> => {
+    if (sortOption === SortOption.Date) return await tweetRepository.getTweetsByDate(page, pageSize,query);
+    else if (sortOption === SortOption.Likes) return await tweetRepository.getTweetsByLikes(page, pageSize,query);
     else return await tweetRepository.getAllTweets(query);
 
 }
 export const getAllTweets = async (req: Request): Promise<DocArrTweetResponse> => {
     const page = 1;
     const pageSize = 10;
-    const { search, sortOption }: { search?: string, sortOption?: string } = req.query;
+    const { search, sortOption }: { search?: string, sortOption?: SortOption } = req.query;
     const query = search ? { text: { $regex: search, $options: 'i' } } : {};
 
-    const tweets: Array<TweetDocument> = await getTweetsSort(sortOption, query, page, pageSize);
+    const tweets: Array<TweetPopulated> = await getTweetsSort(sortOption, query, page, pageSize);
     return {
         status: 200,
         body: tweets
@@ -125,7 +125,7 @@ export const getAllTweets = async (req: Request): Promise<DocArrTweetResponse> =
 }
 export const getTweetsByOwener = async (req: Request): Promise<DocArrTweetResponse> => {
     const { owner }: { owner?: string } = req.query;
-    const tweets: Array<TweetDocument> = await tweetRepository.getTweetsByOwener(owner.toString());
+    const tweets: Array<TweetPopulated> = await tweetRepository.getTweetsByOwener(owner.toString());
     return {
         status: 200,
         body: tweets

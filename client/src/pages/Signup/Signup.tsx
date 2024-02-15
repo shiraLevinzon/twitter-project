@@ -8,32 +8,45 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import { submitForm } from './Function';
+// import { submitForm } from './Function';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { Input } from './Types';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
 import { ErrorMessage } from '@hookform/error-message';
-import { ToastContainer } from 'react-toastify';
-import React from 'react';
+import { ToastContainer, toast } from 'react-toastify';
+import { addUser } from '../../services/UserServices';
+import { useMutation } from '@tanstack/react-query';
+import { sucssesFetchActions } from './Function';
 
 const Signup: FC = ({ }) => {
-
-  const { register, handleSubmit, formState: { errors } ,setValue} = useForm<Input>(
+  const navigate: NavigateFunction = useNavigate();
+  const { register, handleSubmit, formState: { errors }, setValue } = useForm<Input>(
     {
       defaultValues: {
         userName: "",
         email: "",
         password: "",
-        image:"https://i.pinimg.com/originals/3d/14/bf/3d14bf9a9325bb78d40bb80ed3a571a2.png"
+        image: "https://i.pinimg.com/originals/3d/14/bf/3d14bf9a9325bb78d40bb80ed3a571a2.png"
       },
     }
   );
+  const mutation = useMutation({
+    mutationFn: (info: Input) => {
+      return addUser(info);
+    },
+    onSuccess: async (data: Response) => {
+      data.ok ? sucssesFetchActions(navigate) :
+        toast.error(await data.text(), { position: 'top-right' })
 
-  const navigate: NavigateFunction = useNavigate();
+    },
+    onError: () => {
+      toast.error("error", { position: 'top-right' })
+    },
+  })
 
-  const submitSigninForm: SubmitHandler<Input> = async (info: Input): Promise<void> => {
-    submitForm(info, navigate);
-  }
+  // const submitSigninForm: SubmitHandler<Input> = async (info: Input): Promise<void> => {
+  //   mutation.mutate(info)
+  // }
 
   return <Container component="main" maxWidth="xs">
     <CssBaseline />
@@ -51,7 +64,10 @@ const Signup: FC = ({ }) => {
       <Typography component="h1" variant="h5">
         Sign in
       </Typography>
-      <Box component="form" onSubmit={handleSubmit(submitSigninForm)} noValidate sx={{ mt: 1 }}>
+      <Box component="form" onSubmit={handleSubmit(async (info) => {
+        await mutation.mutate(info);
+      })} 
+      noValidate sx={{ mt: 1 }}>
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <TextField  {...register("userName", { required: "User Name is required." })}
@@ -104,33 +120,33 @@ const Signup: FC = ({ }) => {
 
             />
           </Grid>
-          
+
 
         </Grid>
-      <Button
-        type="submit"
-        fullWidth
-        variant="contained"
-        sx={{ mt: 3, mb: 2 }}
-      >
-        Sign In
-      </Button>
-      <ToastContainer />
+        <Button
+          type="submit"
+          fullWidth
+          variant="contained"
+          sx={{ mt: 3, mb: 2 }}
+        >
+          Sign In
+        </Button>
+        <ToastContainer />
 
-      <Grid container>
+        <Grid container>
 
-        <Grid item>
-          <Typography
-            component="div"
-            variant="body2"
-            onClick={() => navigate("/")}
-            style={{ cursor: 'pointer' }}>
-            Already have an account? Sign in
-          </Typography>
+          <Grid item>
+            <Typography
+              component="div"
+              variant="body2"
+              onClick={() => navigate("/")}
+              style={{ cursor: 'pointer' }}>
+              Already have an account? Sign in
+            </Typography>
+          </Grid>
         </Grid>
-      </Grid>
+      </Box>
     </Box>
-  </Box>
   </Container >
 };
 

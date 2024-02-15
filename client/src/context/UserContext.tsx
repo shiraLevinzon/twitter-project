@@ -1,24 +1,24 @@
-import { createContext, Dispatch, SetStateAction, useContext, useState } from 'react';
+import { createContext, Dispatch, FC, SetStateAction, useContext, useState } from 'react';
 import UserDocument from '../../../types/user.type';
 
 
-export const UserContext = createContext<any>(null);
+type UserContextProps=  {
+  user: UserDocument;
+  setUser: Dispatch<SetStateAction<UserDocument>>;
+}
 
+const UserContext = createContext<UserContextProps>({} as UserContextProps);
 
-// type UserContextProps=  {
-//   user: UserDocument;
-//   setUser: Dispatch<SetStateAction<UserDocument>>;
-// }
+export const useUser = (): UserContextProps => useContext(UserContext);
 
-// export const UserContext = createContext<UserContextProps | null>(null);
+export const UserProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
 
-// type Props = {
-//     children: React.ReactNode;
-//   };
-  
-//   export const UserContextProvider = ({ children }: Props) => {
-//     const [user, setUser] = useState();
-  
-//     return <UserContext.Provider value={{ user, setUser }}>{children}</UserContext.Provider>;
-//   };
-  
+    const [user, setUser] = useState<UserDocument>({} as UserDocument);
+
+    const value: UserContextProps = { user, setUser}
+    return (
+        <UserContext.Provider value={value}>
+            {children}
+        </UserContext.Provider>
+    )
+}
