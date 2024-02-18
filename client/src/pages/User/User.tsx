@@ -1,26 +1,27 @@
 import { Dispatch, FC, SetStateAction, useContext, useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
-import { Button, Container, Grid, Typography } from '@mui/material';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { Button, Container, Grid, List, Typography } from '@mui/material';
 import { MDBCol, MDBContainer, MDBRow, MDBCard, MDBCardText, MDBCardBody, MDBCardImage, MDBBtn, MDBTypography } from 'mdb-react-ui-kit';
 import UserDocument from '../../../../types/user.type';
 import { orange } from '@mui/material/colors';
 import { useUser } from '../../context/UserContext';
-import {setUserProfile, sucssesUpdateFollowActions} from './Function';
+import { setUserProfile, sucssesUpdateFollowActions} from './Function';
 import { ToastContainer, toast } from 'react-toastify';
 import { useMutation } from '@tanstack/react-query';
 import { changeRole, updateFollow } from '../../services/UserServices';
+import { getTweetsByOnwer } from '../../services/TweetServices';
+
 
 const User: FC = () => {
-
   const location = useLocation();
   const { user, setUser } :{user: UserDocument, setUser: Dispatch<SetStateAction<UserDocument>>} = useUser();//
   const userProfile: UserDocument = location.state.user;
   const [isFollow, setIsFollow] = useState<boolean>(false);
   const [role, setRole] = useState<string>("");
   const [isMyOwnProfile, setIsMyOwnProfile] = useState<boolean>(false);
-
+  const [numberOfPost, setNumberOfPost] = useState<number>();
   useEffect(() => {
-    setUserProfile(userProfile, user, setRole, setIsMyOwnProfile, setIsFollow)
+    setUserProfile(userProfile, user, setRole, setIsMyOwnProfile, setIsFollow, mutationGetTweetsByOwner)
   }, [user]);
 
   const mutationUpdateFollow = useMutation({
@@ -31,6 +32,18 @@ const User: FC = () => {
       data.ok ? sucssesUpdateFollowActions(setIsFollow,isFollow,setUser,data) :
       toast.error(await data.text(), { position: 'top-right' }) 
       
+    },
+    onError: (error :Error) => {
+      toast.error("error", { position: 'top-right' })
+    },
+  })
+  const mutationGetTweetsByOwner = useMutation({
+    mutationFn: () => {
+      return getTweetsByOnwer(userProfile._id);
+    },
+    onSuccess: async (data: Response) => {
+      data.ok ? setNumberOfPost((await data.json())?.length):
+      toast.error(await data.text(), { position: 'top-right' }) 
     },
     onError: () => {
       toast.error("error", { position: 'top-right' })
@@ -81,7 +94,7 @@ const User: FC = () => {
                 <div className="d-flex justify-content-end text-center py-1">
 
                   <div className="px-3">
-                    <MDBCardText className="mb-1 h5">-</MDBCardText>
+                    <MDBCardText className="mb-1 h5">{numberOfPost}</MDBCardText>
                     <MDBCardText className="small text-muted mb-0">Tweets</MDBCardText>
                   </div>
                   <div>
@@ -103,6 +116,7 @@ const User: FC = () => {
             </MDBCard>
           </MDBCol>
         </MDBRow>
+        
       </MDBContainer>
       <ToastContainer />
     </div>

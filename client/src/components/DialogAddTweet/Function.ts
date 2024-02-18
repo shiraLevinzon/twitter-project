@@ -79,7 +79,7 @@ export const addCommetOrTweet = async (
 export const sucssesFetchActions = async (
     setTweet: Dispatch<React.SetStateAction<TweetPopulated>>,
     setOpen: React.Dispatch<React.SetStateAction<boolean>>,
-    refetch: ((options?: RefetchOptions | undefined) => Promise<QueryObserverResult<TweetDocument[], Error>>) | undefined,
+    refetch: ((options?: RefetchOptions | undefined) => Promise<QueryObserverResult<TweetPopulated[], Error>>) | undefined,
     data: Response)
     : Promise<void> => {
 

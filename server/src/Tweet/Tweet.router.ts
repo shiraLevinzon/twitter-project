@@ -13,8 +13,6 @@ tweetRouter.patch("/addDislike/:id", auth, tweetValidator.idValidate,  tweetCont
 tweetRouter.patch("/addComment/:id", auth, tweetValidator.idValidate, tweetValidator.addTweetValidate, tweetController.updateComments); 
 tweetRouter.get("/", tweetController.getAllTweets);
 tweetRouter.get("/getTweetById/:id", tweetValidator.idValidate, tweetController.getTweetById);
-// tweetRouter.get("/getTweetsByDate", tweetController.getTweetsByDate);
-// tweetRouter.get("/getTweetsByLikes", tweetController.getTweetsByLikes);
 tweetRouter.get("/getTweetsByOwener", tweetController.getTweetsByOwener);
 
 export default tweetRouter;

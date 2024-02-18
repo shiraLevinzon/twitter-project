@@ -65,3 +65,7 @@ export const getAllTweets = async (sortOption: string, search: string): Promise<
 
     return await fetch(`http://localhost:3001/api/v1/tweets?sortOption=${sortOption}&search=${search}`);
 }
+export const getTweetsByOnwer = async (owner: string): Promise<Response> => {
+
+    return await fetch(`http://localhost:3001/api/v1/tweets/getTweetsByOwener?owner=${owner}`);
+}

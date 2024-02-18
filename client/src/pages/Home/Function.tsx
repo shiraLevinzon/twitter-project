@@ -1,5 +1,5 @@
 import React, { ChangeEvent, Dispatch } from "react";
-import TweetDocument from "../../../../types/tweet.type";
+import TweetDocument, { TweetPopulated } from "../../../../types/tweet.type";
 import UserDocument from "../../../../types/user.type";
 import TweetItem from "../../components/TweetItem/Index";
 import { includes } from 'lodash/fp'
@@ -12,7 +12,7 @@ export const renderTweet = (tweet: TweetDocument) => (
      <TweetItem key={tweet.id} tweet={tweet} />
 );
 
-export const margeFilter = (tw: TweetDocument, user: UserDocument): boolean => {
+export const margeFilter = (tw: TweetPopulated, user: UserDocument): boolean => {
      return Array.isArray(tw.tweetOwner) && tw.tweetOwner.length > 0 &&
      includes(tw.tweetOwner[0]._id)(user.followers);
 }
@@ -23,7 +23,7 @@ export const filterOptionChange = async (
      setQuery: Dispatch<React.SetStateAction<Query>>,
      event: ChangeEvent<HTMLInputElement>,
      query: Query,
-     refetch: (options?: RefetchOptions | undefined) => Promise<QueryObserverResult<TweetDocument[], Error>>
+     refetch: (options?: RefetchOptions | undefined) => Promise<QueryObserverResult<TweetPopulated[], Error>>
      
      ): Promise<void> => {
 
@@ -43,7 +43,7 @@ export const filterOptionChange = async (
      setQuery: Dispatch<React.SetStateAction<Query>>,
      event: ChangeEvent<HTMLInputElement>,
      query: Query,
-     refetch: (options?: RefetchOptions | undefined) => Promise<QueryObserverResult<TweetDocument[], Error>>
+     refetch: (options?: RefetchOptions | undefined) => Promise<QueryObserverResult<TweetPopulated[], Error>>
      
  ): Promise<void> => {
      setQuery({ sortOption: query.sortOption, search: event.target.value, isFilterRequire: false });

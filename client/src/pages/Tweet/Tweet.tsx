@@ -9,9 +9,9 @@ import TweetDocument, { TweetPopulated } from '../../../../types/tweet.type';
 import { NavigateFunction, useNavigate, useParams } from 'react-router-dom';
 import DialogAddTweet from "../../components/DialogAddTweet/Index";
 import UserDocument from '../../../../types/user.type';
-import { useMutation } from '@tanstack/react-query';
+import { MutationKey, useMutation } from '@tanstack/react-query';
 import { deleteTweet, getTweet, updateLike } from '../../services/TweetServices';
-import { renderComment, sucssesUpdateLikeActions } from './Function';
+import { renderComment, sucssesDeleteActions, sucssesUpdateLikeActions } from './Function';
 
 
 
@@ -22,6 +22,33 @@ const Tweet: FC = () => {
   const { tweet, setTweet }: { tweet: TweetPopulated, setTweet: Dispatch<SetStateAction<TweetPopulated>> } = useTweet();
   const [isChecked, setIsChecked] = useState<boolean>(false);
 
+
+  useEffect(() => {
+    const fetchData = async (): Promise<void> => {
+      id && await mutationGetTweet.mutate(id)
+
+    };
+    fetchData();
+  }, [id]);
+
+  useEffect(() => {
+    tweet?.likes?.includes(user._id) ? setIsChecked(true) : setIsChecked(false);
+  }, [tweet, user._id]);
+  
+  
+ const mutationDeleteTweet = useMutation({
+    mutationFn: () => {
+      return deleteTweet(tweet._id.toString());
+    },
+    onSuccess: async (data: Response) => {
+      data.ok ? sucssesDeleteActions(data,navigate) :
+        toast.error(await data.text(), { position: 'top-right' });
+        
+    },
+    onError: () => {
+      toast.error("error", { position: 'top-right' })
+    },
+  });
 
   const mutationGetTweet = useMutation({
     mutationFn: (id: string) => {
@@ -37,31 +64,7 @@ const Tweet: FC = () => {
       toast.error("error", { position: 'top-right' })
     },
   })
-  useEffect(() => {
-    const fetchData = async (): Promise<void> => {
-      id && await mutationGetTweet.mutate(id)
-
-    };
-
-    fetchData();
-  }, [id]);
-
-  useEffect(() => {
-    tweet?.likes?.includes(user._id) ? setIsChecked(true) : setIsChecked(false);
-  }, [tweet, user._id]);
- const mutationDeleteTweet = useMutation({
-    mutationFn: () => {
-      return deleteTweet(tweet._id.toString());
-    },
-    onSuccess: async (data: Response) => {
-      data.ok ? await toast.success(await data.text(), { position: 'top-right' }) :
-        toast.error(await data.text(), { position: 'top-right' })
-    },
-    onError: () => {
-      toast.error("error", { position: 'top-right' })
-    },
-  });
-
+  
   const mutationUpdateLike = useMutation({
     mutationFn: () => {
       return updateLike(isChecked, tweet._id.toString());
@@ -75,6 +78,7 @@ const Tweet: FC = () => {
       toast.error("error", { position: 'top-right' })
     },
   });
+  
   return (
     <Container sx={{ paddingTop: 16 }}>
       <Card >
