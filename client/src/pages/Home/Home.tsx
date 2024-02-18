@@ -1,4 +1,3 @@
-import { useQuery } from "@tanstack/react-query";
 import { ChangeEvent, FC, useContext, useEffect, useState } from "react";
 import { map } from "lodash/fp";
 import TweetDocument, { TweetPopulated } from "../../../../types/tweet.type";
@@ -15,9 +14,11 @@ import { NavigateFunction, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import { filterOptionChange, filterSearchChange, margeFilter, renderTweet } from "./Function";
 import { getAllTweets } from "../../services/TweetServices";
+import { useQuery } from "@tanstack/react-query";
 
 const Home: FC = ({ }) => {
-    const navigate: NavigateFunction = useNavigate()
+    const navigate: NavigateFunction = useNavigate();
+    const [tweets, setTweets] = useState<Array<TweetPopulated>>()
     const { user }: { user: UserDocument } = useUser();
     const [query, setQuery] = useState<Query>({
         sortOption: 'date',
@@ -29,15 +30,11 @@ const Home: FC = ({ }) => {
         queryKey: [query],
         queryFn: async () => {
             const response = await getAllTweets(query.sortOption, query.search);
-            if (!response.ok) throw new Error('Failed to fetch tweets');
-            else if (query.isFilterRequire) return await filter((tw: TweetPopulated) => margeFilter(tw, user))(await response.json());
+            if (query.isFilterRequire) return await filter((tw: TweetPopulated) => margeFilter(tw, user))(await response.json());
             return response.json();
         },
-          
      });
-
-
-   
+    
     return (
         <>
             <Avatar
