@@ -80,10 +80,10 @@ export const sucssesFetchActions = async (
     setTweet: Dispatch<React.SetStateAction<TweetPopulated>>,
     setOpen: React.Dispatch<React.SetStateAction<boolean>>,
     refetch: ((options?: RefetchOptions | undefined) => Promise<QueryObserverResult<TweetPopulated[], Error>>) | undefined,
-    data: Response)
+    data: TweetPopulated)
     : Promise<void> => {
 
-    await setTweet(await data.json());
+    await setTweet(data);
     setOpen(false);
     refetch && await refetch();
 }

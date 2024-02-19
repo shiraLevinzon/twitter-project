@@ -8,7 +8,7 @@ export type DocResponse = {
 
 export type LoginDocResponse = {
   status: number;
-  body: { user: UserDocument, token: string } | string;
+  body: LoginUser | string;
 };
 
 export type DocUserResponse = {
@@ -32,4 +32,7 @@ export type DeleteResponse = {
 };
 
 
-
+export type LoginUser={
+  user: UserDocument;
+   token: string;
+}

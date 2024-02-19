@@ -21,7 +21,7 @@ import UserDocument from '../../../../types/user.type';
 
 const Signup: FC = ({ }) => {
   const navigate: NavigateFunction = useNavigate();
-  const { register, handleSubmit, formState: { errors }, setValue } = useForm<Input>(
+  const { register, handleSubmit, formState: { errors }, getValues } = useForm<Input>(
     {
       defaultValues: {
         userName: "",
@@ -31,19 +31,22 @@ const Signup: FC = ({ }) => {
       },
     }
   );
-  const mutation = useMutation({
-    mutationFn: (info: Input) => {
-      return addUser(info);
+
+  const { refetch } = useQuery<Response, Error>({
+    queryKey: ["signup"],
+    queryFn: async () => {
+      return await addUser(getValues());
     },
+    enabled: false,
     onSuccess: async (data: Response) => {
       data.ok ? sucssesFetchActions(navigate) :
         toast.error(await data.text(), { position: 'top-right' })
 
     },
-    onError: () => {
-      toast.error("error", { position: 'top-right' })
-    },
-  })
+    onError: (error: Error) => {
+      toast.error(error.message, { position: 'top-right' })
+    }
+  });
 
 
   return <Container component="main" maxWidth="xs">
@@ -62,10 +65,8 @@ const Signup: FC = ({ }) => {
       <Typography component="h1" variant="h5">
         Sign in
       </Typography>
-      <Box component="form" onSubmit={handleSubmit(async (info) => {
-        await mutation.mutate(info);
-      })} 
-      noValidate sx={{ mt: 1 }}>
+      <Box component="form" onSubmit={handleSubmit(() => { refetch() })}
+        noValidate sx={{ mt: 1 }}>
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <TextField  {...register("userName", { required: "User Name is required." })}

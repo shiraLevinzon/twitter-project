@@ -17,30 +17,30 @@ import { ErrorMessage } from "@hookform/error-message";
 import { useUser } from "../../context/UserContext";
 import { ToastContainer, toast } from "react-toastify";
 import React from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { addLogin } from "../../services/UserServices";
-
+import { LoginUser } from '../../../../types/response.type'
 
 const Login: FC = ({ }) => {
     const { setUser }: { setUser: React.Dispatch<React.SetStateAction<UserDocument>> } = useUser();
-    const { register, handleSubmit, formState: { errors } } = useForm<Input>();
+    const { register, handleSubmit, formState: { errors }, getValues } = useForm<Input>();
     const navigate: NavigateFunction = useNavigate();
 
 
-
-    const mutation = useMutation({
-        mutationFn: (info: Input) => {            
-            return addLogin(info);
+    const { refetch } = useQuery<Response, Error>({
+        queryKey: ["login"],
+        queryFn: async () => {
+            return await addLogin(getValues());
         },
+        enabled: false,
         onSuccess: async (data: Response) => {
             data.ok ? sucssesFetchActions(data, setUser, navigate) :
                 toast.error(await data.text(), { position: 'top-right' })
         },
-        onError: () => {
-            toast.error("error", { position: 'top-right' })
-        },
-    })
-
+        onError: (error: Error) => {
+            toast.error(error.message, { position: 'top-right' })
+        }
+    });
 
 
     return <Container component="main" maxWidth="xs">
@@ -59,8 +59,8 @@ const Login: FC = ({ }) => {
             <Typography component="h1" variant="h5">
                 Sign in
             </Typography>
-            <Box component="form" onSubmit={handleSubmit((info) => {
-                 mutation.mutate(info);
+            <Box component="form" onSubmit={handleSubmit(() => {
+                refetch();
             })} noValidate sx={{ mt: 1 }}>
                 <TextField {...register("email", { required: "Email is required." })}
                     margin="normal"

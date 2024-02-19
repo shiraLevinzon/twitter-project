@@ -9,41 +9,44 @@ import { Input } from './Types';
 import { addCommetOrTweet, closeDialog, openDialog, sucssesFetchActions } from './Function';
 import { toast } from 'react-toastify';
 import { useMutation, useQuery } from '@tanstack/react-query';
+import { TweetPopulated } from '../../../../types/tweet.type';
 
 
 
 const DialogAddTweet: FC<DialogProps> = ({ kind, refetch }) => {
   const { tweet, setTweet } = useTweet();
 
-  const { register, handleSubmit, formState: { errors } } = useForm<Input>();
+  const { register, handleSubmit, formState: { errors }, getValues } = useForm<Input>();
   const [open, setOpen] = useState<boolean>(false);
 
-  const mutation = useMutation({
-    mutationFn: (info: Input) => {            
-        return addCommetOrTweet(info, kind,tweet);
+  const { refetch: refetchUpdateCommetOrTweet } = useQuery<TweetPopulated, Error>({
+    queryKey: ["updateCommetOrTweet"],
+    queryFn: async () => {
+      const response: Response = await addCommetOrTweet(getValues(), kind, tweet);
+      return response.json();
     },
-    onSuccess: async (data: Response) => {
-        data.ok ? sucssesFetchActions(setTweet,setOpen,refetch,data) :
-            toast.error(await data.text(), { position: 'top-right' })
+    enabled: false,
+    onSuccess: (data: TweetPopulated) => {
+      sucssesFetchActions(setTweet, setOpen, refetch, data)
     },
-    onError: () => {
-        toast.error("error", { position: 'top-right' })
-    },
-})
-
+    onError: (error: Error) => {
+      toast.error(error.message, { position: 'top-right' })
+    }
+  });
   return (
     <React.Fragment>
-      <IconButton onClick={()=>{openDialog(setOpen)}}>
+      <IconButton onClick={() => { openDialog(setOpen) }}>
         <AddComment fontSize='large' />
       </IconButton>
       <Dialog
         sx={{ minWidth: 300 }}
         open={open}
-        onClose={()=>{closeDialog(setOpen)}}
+        onClose={() => { closeDialog(setOpen) }}
         PaperProps={{
           component: 'form',
-          onSubmit:handleSubmit((info: Input) => {
-             mutation.mutate(info);})
+          onSubmit: handleSubmit(() => {
+            refetchUpdateCommetOrTweet()
+          })
         }}
       >
         <DialogTitle>Add {kind}</DialogTitle>
@@ -56,7 +59,7 @@ const DialogAddTweet: FC<DialogProps> = ({ kind, refetch }) => {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={()=>{closeDialog(setOpen)}}>Cancel</Button>
+          <Button onClick={() => { closeDialog(setOpen) }}>Cancel</Button>
           <Button type="submit">Add</Button>
         </DialogActions>
       </Dialog>
