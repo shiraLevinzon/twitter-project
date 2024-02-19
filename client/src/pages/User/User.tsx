@@ -1,67 +1,82 @@
 import { Dispatch, FC, SetStateAction, useContext, useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { Button, Container, Grid, List, Typography } from '@mui/material';
 import { MDBCol, MDBContainer, MDBRow, MDBCard, MDBCardText, MDBCardBody, MDBCardImage, MDBBtn, MDBTypography } from 'mdb-react-ui-kit';
 import UserDocument from '../../../../types/user.type';
 import { orange } from '@mui/material/colors';
 import { useUser } from '../../context/UserContext';
-import { setUserProfile, sucssesUpdateFollowActions} from './Function';
+import { setUserProfile, sucssesUpdateFollowActions } from './Function';
 import { ToastContainer, toast } from 'react-toastify';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { changeRole, updateFollow } from '../../services/UserServices';
 import { getTweetsByOnwer } from '../../services/TweetServices';
+import { useLocation } from 'react-router-dom';
+import { Button } from '@mui/material';
+import { TweetPopulated } from '../../../../types/tweet.type';
 
 
 const User: FC = () => {
   const location = useLocation();
-  const { user, setUser } :{user: UserDocument, setUser: Dispatch<SetStateAction<UserDocument>>} = useUser();//
+  const { user, setUser }: { user: UserDocument, setUser: Dispatch<SetStateAction<UserDocument>> } = useUser();//
   const userProfile: UserDocument = location.state.user;
   const [isFollow, setIsFollow] = useState<boolean>(false);
   const [role, setRole] = useState<string>("");
   const [isManager, setIsManager] = useState<boolean>(false);
-  const [numberOfPost, setNumberOfPost] = useState<number>();
+  const [tweets, setTweets] = useState<Array<TweetPopulated>>();
   useEffect(() => {
-    setUserProfile(userProfile, user, setRole, setIsManager, setIsFollow, mutationGetTweetsByOwner)
+    setUserProfile(userProfile, user, setRole, setIsManager, setIsFollow);
+    refetchTweets();
+
   }, [user]);
 
-  const mutationUpdateFollow = useMutation({
-    mutationFn: () => {
-      return updateFollow(userProfile._id, isFollow);
-    },
-    onSuccess: async (data: Response) => {
-      data.ok ? sucssesUpdateFollowActions(setIsFollow,isFollow,setUser,data) :
-      toast.error(await data.text(), { position: 'top-right' }) 
-      
-    },
-    onError: (error :Error) => {
-      toast.error("error", { position: 'top-right' })
-    },
-  })
-  const mutationGetTweetsByOwner = useMutation({
-    mutationFn: () => {
-      return getTweetsByOnwer(userProfile._id);
-    },
-    onSuccess: async (data: Response) => {
-      data.ok ? setNumberOfPost((await data.json())?.length):
-      toast.error(await data.text(), { position: 'top-right' }) 
-    },
-    onError: () => {
-      toast.error("error", { position: 'top-right' })
-    },
-  })
 
-  const mutationChangeRole = useMutation({
-    mutationFn: () => {
-      return changeRole(userProfile._id);
+  const { refetch: refetchFollow } = useQuery<UserDocument, Error>({
+    queryKey: ["updateFollow"],
+    queryFn: async () => { 
+      const response: Response= await updateFollow(userProfile._id, isFollow);
+      return response.json();
     },
-    onSuccess: async (data: Response) => {
-      data.ok ? setRole((await data.json()).role) :
-      toast.error(await data.text(), { position: 'top-right' }) 
+    enabled: false,
+
+    onSuccess: (data: UserDocument)=> {
+      sucssesUpdateFollowActions(setIsFollow, isFollow, setUser, data)
     },
-    onError: () => {
-      toast.error("error", { position: 'top-right' })
+    onError:(error:Error)=> {
+      toast.error(error.message, { position: 'top-right' })
+    }
+  });
+
+  
+
+
+  const { refetch: refetchTweets } = useQuery<Array<TweetPopulated>, Error>({
+    queryKey: ["getTweetsByOwner"],
+    queryFn: async () => {
+      const response = await getTweetsByOnwer(userProfile._id);
+      return response.json();
     },
-  })
+    enabled: false,
+
+    onSuccess: (data: Array<TweetPopulated>) => {
+      setTweets(data)
+    },
+    onError: (error: Error) => {
+      toast.error(error.message, { position: 'top-right' })
+    }
+  });
+  const { refetch: refetchChangeRole } = useQuery<UserDocument, Error>({
+    queryKey: ["changeRole"],
+    queryFn: async () => { 
+      const response: Response= await changeRole(userProfile._id);
+      return response.json();
+    },
+    enabled: false,
+
+    onSuccess: (data: UserDocument)=> {
+      setRole(data.role? data.role:"")
+    },
+    onError:(error:Error)=> {
+      toast.error(error.message, { position: 'top-right' })
+    }
+  });
 
 
   return (
@@ -75,10 +90,10 @@ const User: FC = () => {
                   <MDBCardImage src={userProfile.image}
                     alt="Generic placeholder image" className="mt-4 mb-2 img-thumbnail" fluid style={{ borderRadius: 100, width: '150px', zIndex: '1' }} />
                   <Button variant={isFollow ? "outlined" : "contained"} color='warning'
-                    onClick={()=>{mutationUpdateFollow.mutate()}} style={{ height: '36px', overflow: 'visible' }}>
+                    onClick={() => { refetchFollow() }} style={{ height: '36px', overflow: 'visible' }}>
                     {isFollow ? "UnFollow" : "Follow"}
                   </Button>
-                  {isManager && <Button onClick={()=>{mutationChangeRole.mutate()}} variant="text"
+                  {isManager && <Button onClick={() => { refetchChangeRole() }} variant="text"
                     color="warning" style={{ height: '36px', overflow: 'visible' }}>
                     Change Role
                   </Button>}
@@ -92,7 +107,7 @@ const User: FC = () => {
                 <div className="d-flex justify-content-end text-center py-1">
 
                   <div className="px-3">
-                    <MDBCardText className="mb-1 h5">{numberOfPost}</MDBCardText>
+                    <MDBCardText className="mb-1 h5">{tweets?.length}</MDBCardText>
                     <MDBCardText className="small text-muted mb-0">Tweets</MDBCardText>
                   </div>
                   <div>
@@ -114,7 +129,7 @@ const User: FC = () => {
             </MDBCard>
           </MDBCol>
         </MDBRow>
-        
+
       </MDBContainer>
       <ToastContainer />
     </div>

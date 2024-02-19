@@ -9,7 +9,7 @@ import TweetDocument, { TweetPopulated } from '../../../../types/tweet.type';
 import { NavigateFunction, useNavigate, useParams } from 'react-router-dom';
 import DialogAddTweet from "../../components/DialogAddTweet/Index";
 import UserDocument from '../../../../types/user.type';
-import { MutationKey, useMutation } from '@tanstack/react-query';
+import { MutationKey, useMutation, useQuery } from '@tanstack/react-query';
 import { deleteTweet, getTweet, updateLike } from '../../services/TweetServices';
 import { renderComment, sucssesDeleteActions, sucssesUpdateLikeActions } from './Function';
 
@@ -22,10 +22,9 @@ const Tweet: FC = () => {
   const { tweet, setTweet }: { tweet: TweetPopulated, setTweet: Dispatch<SetStateAction<TweetPopulated>> } = useTweet();
   const [isChecked, setIsChecked] = useState<boolean>(false);
 
-
   useEffect(() => {
     const fetchData = async (): Promise<void> => {
-      id && await mutationGetTweet.mutate(id)
+      id && await mutationGetTweet.mutate(id);
 
     };
     fetchData();
@@ -34,20 +33,20 @@ const Tweet: FC = () => {
   useEffect(() => {
     tweet?.likes?.includes(user._id) ? setIsChecked(true) : setIsChecked(false);
   }, [tweet, user._id]);
-  
-  
- const mutationDeleteTweet = useMutation({
-    mutationFn: () => {
-      return deleteTweet(tweet._id.toString());
+
+
+  const { refetch: refetchDeleteTweet } = useQuery<Response, Error>({
+    queryKey: ["deleteTweet"],
+    queryFn: async () => {
+      return await deleteTweet(tweet._id.toString());;
     },
-    onSuccess: async (data: Response) => {
-      data.ok ? sucssesDeleteActions(data,navigate) :
-        toast.error(await data.text(), { position: 'top-right' });
-        
+    enabled: false,
+    onSuccess: () => {
+      sucssesDeleteActions(navigate);
     },
-    onError: () => {
-      toast.error("error", { position: 'top-right' })
-    },
+    onError: (error: Error) => {
+      toast.error(error.message, { position: 'top-right' })
+    }
   });
 
   const mutationGetTweet = useMutation({
@@ -55,30 +54,28 @@ const Tweet: FC = () => {
       return getTweet(id);
     },
     onSuccess: async (data: Response) => {
-
-      data.ok ? setTweet(await data.json()):
+      data.ok ? setTweet(await data.json()) :
         toast.error(await data.text(), { position: 'top-right' })
-
-    },
-    onError: () => {
-      toast.error("error", { position: 'top-right' })
-    },
-  })
-  
-  const mutationUpdateLike = useMutation({
-    mutationFn: () => {
-      return updateLike(isChecked, tweet._id.toString());
-    },
-    onSuccess: async (data: Response) => {
-      data.ok ? sucssesUpdateLikeActions(data, setTweet,setIsChecked,isChecked)  :
-        toast.error(await data.text(), { position: 'top-right' })
-
     },
     onError: () => {
       toast.error("error", { position: 'top-right' })
     },
   });
-  
+
+  const { refetch: refetchUpdateLike } = useQuery<TweetPopulated, Error>({
+    queryKey: ["updateLike"],
+    queryFn: async () => {
+      const response: Response = await updateLike(isChecked, tweet._id.toString());
+      return response.json();
+    },
+    enabled: false,
+    onSuccess: (data: TweetPopulated) => {
+      sucssesUpdateLikeActions(data, setTweet, setIsChecked, isChecked)
+    },
+    onError: (error: Error) => {
+      toast.error(error.message, { position: 'top-right' })
+    }
+  });
   return (
     <Container sx={{ paddingTop: 16 }}>
       <Card >
@@ -97,14 +94,14 @@ const Tweet: FC = () => {
         </CardContent>
         <CardActions>
 
-          <IconButton onClick={()=>{mutationDeleteTweet.mutate()}}>
+          <IconButton onClick={() => { refetchDeleteTweet() }}>
             <Delete fontSize='large' />
           </IconButton>
 
           <DialogAddTweet kind='comment' />
           <FormControlLabel sx={{ alignItems: 'end', width: '100%' }}
             value="bottom"
-            control={<Checkbox checked={isChecked} onChange={()=>{mutationUpdateLike.mutate()}} color='warning' icon={<FavoriteBorder fontSize='large' />} checkedIcon={<Favorite fontSize='large' />} />}
+            control={<Checkbox checked={isChecked} onChange={() => { refetchUpdateLike() }} color='warning' icon={<FavoriteBorder fontSize='large' />} checkedIcon={<Favorite fontSize='large' />} />}
             label={tweet?.likes?.length + " likes"}
             labelPlacement="top"
           />

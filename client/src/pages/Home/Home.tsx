@@ -10,15 +10,14 @@ import UserDocument from "../../../../types/user.type";
 import { Query } from "./Types";
 import DialogAddTweet from "../../components/DialogAddTweet/Index";
 import React from "react";
-import { NavigateFunction, useNavigate } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
 import { filterOptionChange, filterSearchChange, margeFilter, renderTweet } from "./Function";
 import { getAllTweets } from "../../services/TweetServices";
 import { useQuery } from "@tanstack/react-query";
+import { NavigateFunction, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Home: FC = ({ }) => {
     const navigate: NavigateFunction = useNavigate();
-    const [tweets, setTweets] = useState<Array<TweetPopulated>>()
     const { user }: { user: UserDocument } = useUser();
     const [query, setQuery] = useState<Query>({
         sortOption: 'date',
@@ -26,15 +25,20 @@ const Home: FC = ({ }) => {
         isFilterRequire: false
     });
 
-    const { isLoading, error, data, refetch, isError, isSuccess } = useQuery<Array<TweetPopulated>, Error>({
+    const { isLoading, error, data, refetch } = useQuery<Array<TweetPopulated>, Error>({
         queryKey: [query],
         queryFn: async () => {
             const response = await getAllTweets(query.sortOption, query.search);
-            if (query.isFilterRequire) return await filter((tw: TweetPopulated) => margeFilter(tw, user))(await response.json());
+            if (query.isFilterRequire)
+                return await filter((tw: TweetPopulated) => margeFilter(tw, user))(await response.json());
             return response.json();
         },
-     });
-    
+        onError: () => {
+            toast.error("failed to fetch");
+        }
+
+    });
+
     return (
         <>
             <Avatar
@@ -62,11 +66,11 @@ const Home: FC = ({ }) => {
                                 }}
                                 defaultValue='date'
                             >
-                                <FormControlLabel value="all" control={<Radio style={{ color: 'orange' }} />} label="All" />
-                                <FormControlLabel value="date" control={<Radio style={{ color: 'orange' }} />} label="Newest" />
-                                <FormControlLabel value="likes" control={<Radio style={{ color: 'orange' }} />} label="Most Popular" />
-                                <FormControlLabel value="newFollowing" control={<Radio style={{ color: 'orange' }} />} label="Newest from your folowing" />
-                                <FormControlLabel value="popularFollowing" control={<Radio style={{ color: 'orange' }} />} label="Most Popular from your folowing" />
+                                <FormControlLabel value="all" control={<Radio />} label="All" />
+                                <FormControlLabel value="date" control={<Radio />} label="Newest" />
+                                <FormControlLabel value="likes" control={<Radio />} label="Most Popular" />
+                                <FormControlLabel value="newFollowing" control={<Radio />} label="Newest from your folowing" />
+                                <FormControlLabel value="popularFollowing" control={<Radio />} label="Most Popular from your folowing" />
                             </RadioGroup>
                         </Grid>
                         <Grid item xs={3}>

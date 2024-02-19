@@ -15,8 +15,9 @@ import { NavigateFunction, useNavigate } from 'react-router-dom';
 import { ErrorMessage } from '@hookform/error-message';
 import { ToastContainer, toast } from 'react-toastify';
 import { addUser } from '../../services/UserServices';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { sucssesFetchActions } from './Function';
+import UserDocument from '../../../../types/user.type';
 
 const Signup: FC = ({ }) => {
   const navigate: NavigateFunction = useNavigate();
@@ -44,9 +45,6 @@ const Signup: FC = ({ }) => {
     },
   })
 
-  // const submitSigninForm: SubmitHandler<Input> = async (info: Input): Promise<void> => {
-  //   mutation.mutate(info)
-  // }
 
   return <Container component="main" maxWidth="xs">
     <CssBaseline />

@@ -3,6 +3,7 @@ import "react-toastify/dist/ReactToastify.css";
 import UserDocument from "../../../../types/user.type";
 import { Dispatch, SetStateAction } from "react";
 import { UseMutationResult } from "@tanstack/react-query";
+import { QueryObserverResult, RefetchOptions, RefetchQueryFilters } from "react-query";
 
 export const setUserProfile = (
     userProfile: UserDocument,
@@ -10,23 +11,21 @@ export const setUserProfile = (
     setRole: Dispatch<SetStateAction<string>>,
     setIsManager: Dispatch<SetStateAction<boolean>>,
     setIsFollow: Dispatch<SetStateAction<boolean>>,
-    mutationGetTweetsByOwner: UseMutationResult<Response, Error, void, unknown>)
-    : void => {
+    )    : void => {
 
     userProfile.role === 'user' ? setRole("user") : setRole("manager");
     user.role === 'manager' ? setIsManager(true) : setIsManager(false);
     user?.followers?.includes(userProfile._id) ? setIsFollow(true) : setIsFollow(false);
-    mutationGetTweetsByOwner.mutate()
 }
 export const sucssesUpdateFollowActions = async (
     setIsFollow: Dispatch<SetStateAction<boolean>>,
     isFollow: boolean,
     setUser: Dispatch<SetStateAction<UserDocument>>,
-    data: Response)
+    data: UserDocument)
     : Promise<void> => {
 
     setIsFollow(!isFollow);
-    setUser(await data.json());
+    setUser(data);
 }
 
 

@@ -8,7 +8,7 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { Input } from './Types';
 import { addCommetOrTweet, closeDialog, openDialog, sucssesFetchActions } from './Function';
 import { toast } from 'react-toastify';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 
 
 
