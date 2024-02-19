@@ -53,7 +53,7 @@ export const updateUnfollow = async (req: Request, res: Response): Promise<Respo
 };
 export const updateRoll = async (req: Request, res: Response): Promise<Response> => {
 
-    const { status, body } : DocResponse = await userManager.updateRoll(req, res.locals.userId)
+    const { status, body } : DocResponse = await userManager.updateRoll(req)
         .catch((error: Error) => {
             return { status: 400, body: error.message }
         });

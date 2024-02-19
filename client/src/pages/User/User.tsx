@@ -18,10 +18,10 @@ const User: FC = () => {
   const userProfile: UserDocument = location.state.user;
   const [isFollow, setIsFollow] = useState<boolean>(false);
   const [role, setRole] = useState<string>("");
-  const [isMyOwnProfile, setIsMyOwnProfile] = useState<boolean>(false);
+  const [isManager, setIsManager] = useState<boolean>(false);
   const [numberOfPost, setNumberOfPost] = useState<number>();
   useEffect(() => {
-    setUserProfile(userProfile, user, setRole, setIsMyOwnProfile, setIsFollow, mutationGetTweetsByOwner)
+    setUserProfile(userProfile, user, setRole, setIsManager, setIsFollow, mutationGetTweetsByOwner)
   }, [user]);
 
   const mutationUpdateFollow = useMutation({
@@ -52,12 +52,10 @@ const User: FC = () => {
 
   const mutationChangeRole = useMutation({
     mutationFn: () => {
-      return changeRole(role);
+      return changeRole(userProfile._id);
     },
     onSuccess: async (data: Response) => {
-      const futureRole: string = role === 'user' ? 'manager' : 'user';
-      
-      data.ok ? setRole(futureRole) :
+      data.ok ? setRole((await data.json()).role) :
       toast.error(await data.text(), { position: 'top-right' }) 
     },
     onError: () => {
@@ -80,7 +78,7 @@ const User: FC = () => {
                     onClick={()=>{mutationUpdateFollow.mutate()}} style={{ height: '36px', overflow: 'visible' }}>
                     {isFollow ? "UnFollow" : "Follow"}
                   </Button>
-                  {isMyOwnProfile && <Button onClick={()=>{mutationChangeRole.mutate()}} variant="text"
+                  {isManager && <Button onClick={()=>{mutationChangeRole.mutate()}} variant="text"
                     color="warning" style={{ height: '36px', overflow: 'visible' }}>
                     Change Role
                   </Button>}

@@ -44,11 +44,10 @@ export const updateFollow = async (userToFollowId: string, isFollow: boolean): P
         })
 }
 
-export const changeRole = async (role: string): Promise<Response> => {
-    const futureRole: string = role === 'user' ? 'manager' : 'user';
+export const changeRole = async (id: string): Promise<Response> => {
     const token: string | null = localStorage.getItem("token");
 
-    return await fetch('http://localhost:3001/api/v1/users/updateRole/' + futureRole,
+    return await fetch('http://localhost:3001/api/v1/users/updateRole/' + id,
         {
             method: 'PATCH',
             headers: {
