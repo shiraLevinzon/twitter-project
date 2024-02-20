@@ -1,0 +1,7 @@
+.mainBox {
+    margin-top: 62px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    
+  }

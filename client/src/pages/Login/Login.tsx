@@ -19,7 +19,7 @@ import { ToastContainer, toast } from "react-toastify";
 import React from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { addLogin } from "../../services/UserServices";
-import { LoginUser } from '../../../../types/response.type'
+import {MainBox} from './Styles'
 
 const Login: FC = ({ }) => {
     const { setUser }: { setUser: React.Dispatch<React.SetStateAction<UserDocument>> } = useUser();
@@ -45,14 +45,7 @@ const Login: FC = ({ }) => {
 
     return <Container component="main" maxWidth="xs">
         <CssBaseline />
-        <Box
-            sx={{
-                marginTop: 8,
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-            }}
-        >
+        <MainBox >
             <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
                 <LockOutlinedIcon />
             </Avatar>
@@ -110,7 +103,7 @@ const Login: FC = ({ }) => {
                     </Grid>
                 </Grid>
             </Box>
-        </Box>
+        </MainBox>
     </Container>
 };
 

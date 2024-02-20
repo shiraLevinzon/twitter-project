@@ -8,6 +8,7 @@
     "@hookform/error-message": "^2.0.1",
     "@mui/icons-material": "^5.15.7",
     "@mui/material": "^5.15.7",
+    "@mui/system": "^5.15.9",
     "@mui/x-tree-view": "^6.17.0",
     "@tanstack/react-query": "^4.36.1",
     "@testing-library/jest-dom": "^5.17.0",
@@ -55,6 +56,7 @@
   },
   "devDependencies": {
     "@types/lodash": "^4.14.202",
-    "react-router-dom": "^6.22.1"
+    "react-router-dom": "^6.22.1",
+    "typings-for-css-modules-loader": "^1.7.0"
   }
 }
