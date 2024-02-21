@@ -3,7 +3,7 @@ import UserDocument from "../../../types/user.type";
 import bcrypt from 'bcrypt';
 
 export const getUsers = async (): Promise<Array<UserDocument>> => await User.find().populate("followers");
-export const getUserByEmail = async (email: string): Promise<UserDocument> => await User.findOne({ email }).populate("followers");
+export const getUserByEmail = async (email: string): Promise<UserDocument> => await User.findOne({ email });
 export const getUserById = async (id: string): Promise<UserDocument> => await User.findOne({ _id: id }).populate("followers");
 
 export const addUser = async (body: UserDocument): Promise<UserDocument> => {

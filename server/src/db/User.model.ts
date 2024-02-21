@@ -17,7 +17,7 @@ const userSchema = new Schema<UserDocument>({
   },
   dateCreated: {
     type: Date,
-    default: Date.now(),
+    default:()=> Date.now(),
   },
   loction:{
     type: String,

@@ -10,7 +10,7 @@ export const addUser = async (req: Request, res: Response): Promise<Response> =>
         .catch((error: Error) => {
             return { status: 400, body: error.message }
         });
-    return res.status(status).send(body);
+    return res.status(status).json(body);
 
 };
 
@@ -53,7 +53,7 @@ export const updateUnfollow = async (req: Request, res: Response): Promise<Respo
 };
 export const updateRoll = async (req: Request, res: Response): Promise<Response> => {
 
-    const { status, body } : DocResponse = await userManager.updateRoll(req, res.locals.userId)
+    const { status, body } : DocResponse = await userManager.updateRoll(req)
         .catch((error: Error) => {
             return { status: 400, body: error.message }
         });

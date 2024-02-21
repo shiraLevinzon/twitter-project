@@ -15,7 +15,7 @@ export const generateToken = (userId: string): string => {
 }
 export const decodeToken =  (token: string) : string  => {
     try {
-        const {userId}=  jwt.verify(token, process.env.JWT_SECRET_CODE) as JwtPayload
+        const {userId}=  jwt.verify(token, process.env.JWT_SECRET_CODE) as JwtPayload;
         return userId; 
     }
     catch (error) {

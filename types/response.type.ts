@@ -1,14 +1,14 @@
 import UserDocument from "./user.type";
-import TweetDocument from "./tweet.type";
+import TweetDocument, { TweetPopulated } from "./tweet.type";
 
 export type DocResponse = {
   status: number;
-  body: TweetDocument | UserDocument |  string | Array<TweetDocument> | Array<UserDocument>;
+  body: TweetDocument | UserDocument |  string | Array<TweetDocument> | Array<UserDocument> |TweetPopulated | Array<TweetPopulated>;
 };
 
 export type LoginDocResponse = {
   status: number;
-  body: { user: UserDocument, token: string } | string;
+  body: LoginUser | string;
 };
 
 export type DocUserResponse = {
@@ -18,12 +18,12 @@ export type DocUserResponse = {
 
 export type DocTweetResponse = {
   status: number;
-  body: TweetDocument;
+  body: TweetDocument | TweetPopulated;
 };
 
 export type DocArrTweetResponse = {
   status: number;
-  body: Array<TweetDocument> ;
+  body: Array<TweetDocument> | Array<TweetPopulated>;
 };
 
 export type DeleteResponse = {
@@ -32,4 +32,7 @@ export type DeleteResponse = {
 };
 
 
-
+export type LoginUser={
+  user: UserDocument;
+   token: string;
+}

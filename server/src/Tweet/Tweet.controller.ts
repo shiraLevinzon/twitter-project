@@ -68,25 +68,7 @@ export const getTweetById = async (req: Request, res: Response) : Promise<Respon
     return res.status(status).send(body);
 
 };
-export const getTweetsByDate = async (req: Request, res: Response) : Promise<Response> => {
 
-    const { status, body } :DocResponse= await tweetManager.getTweetsByDate(req)
-        .catch((error : Error) => {
-            return { status: 400, body: error.message }
-
-        });
-    return res.status(status).send(body);
-
-};
-export const getTweetsByLikes  = async (req: Request, res: Response) : Promise<Response> => {
-
-    const { status, body } : DocResponse = await tweetManager.getTweetsByLikes(req)
-        .catch((error : Error) => {
-            return { status: 400, body: error.message }
-        });
-    return res.status(status).send(body);
-
-};
 export const getTweetsByOwener = async (req: Request, res: Response) : Promise<Response> => {
     const  { status, body } : DocResponse = await tweetManager.getTweetsByOwener(req)
         .catch((error : Error) => {

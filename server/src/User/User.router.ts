@@ -11,6 +11,6 @@ userRouter.post("/addLogin", userValidator.loginValidate, userController.addLogi
 userRouter.get("/getUserById/:id", userValidator.idValidate, userController.getUserById);
 userRouter.patch("/addFollow/:id", auth, userValidator.idValidate, userController.updateFollow);
 userRouter.patch("/addUnfollow/:id", auth, userValidator.idValidate, userController.updateUnfollow);
-userRouter.patch("/updateRole/:role", auth, userValidator.roleValidate, userController.updateRoll);
+userRouter.patch("/updateRole/:id", auth, userValidator.idValidate, userController.updateRoll);
 
 export default userRouter;
