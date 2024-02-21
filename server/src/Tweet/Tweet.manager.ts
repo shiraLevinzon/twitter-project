@@ -40,7 +40,7 @@ export const deleteTweet = async (req: Request, userId: string): Promise<DeleteR
     
     const { role: ownerRole }: { role?: Role } = (await getUserById(tweetOwner._id.toString())).body;
 
-    const isDeletedByUser: boolean = currentUser.role === "user" && tweetOwner._id.toString() !== userId;
+    const isDeletedByUser: boolean = currentUser.role === "user" && tweetOwner._id.toString() !== userId;    
     const isDeleteByManager: boolean = currentUser.role === 'manager' && ownerRole === 'manager' && currentUser._id==! tweetOwner._id;
 
     if (isDeletedByUser)

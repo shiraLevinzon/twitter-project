@@ -38,11 +38,11 @@ const Tweet: FC = () => {
   const { refetch: refetchDeleteTweet } = useQuery<Response, Error>({
     queryKey: ["deleteTweet"],
     queryFn: async () => {
-      return await deleteTweet(tweet._id.toString());;
+      return await deleteTweet(tweet._id.toString());
     },
     enabled: false,
-    onSuccess: () => {
-      sucssesDeleteActions(navigate);
+    onSuccess: async (data:Response) => {
+      data.ok? sucssesDeleteActions(navigate):  toast.error("error ", { position: 'top-right' })
     },
     onError: (error: Error) => {
       toast.error(error.message, { position: 'top-right' })
@@ -101,7 +101,9 @@ const Tweet: FC = () => {
           <DialogAddTweet kind='comment' />
           <FormControlLabel sx={{ alignItems: 'end', width: '100%' }}
             value="bottom"
-            control={<Checkbox checked={isChecked} onChange={() => { refetchUpdateLike() }} color='warning' icon={<FavoriteBorder fontSize='large' />} checkedIcon={<Favorite fontSize='large' />} />}
+            control={<Checkbox checked={isChecked} onChange={() => { refetchUpdateLike() }} color='warning'
+              icon={<FavoriteBorder fontSize='large' />}
+              checkedIcon={<Favorite fontSize='large' />} />}
             label={tweet?.likes?.length + " likes"}
             labelPlacement="top"
           />

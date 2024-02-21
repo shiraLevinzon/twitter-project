@@ -15,6 +15,7 @@ import { getAllTweets } from "../../services/TweetServices";
 import { useQuery } from "@tanstack/react-query";
 import { NavigateFunction, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { HomeAvatar, HomeList, OrangeRadio } from "./Styles";
 
 const Home: FC = ({ }) => {
     const navigate: NavigateFunction = useNavigate();
@@ -41,17 +42,9 @@ const Home: FC = ({ }) => {
 
     return (
         <>
-            <Avatar
+            <HomeAvatar
                 onClick={() => { navigate(`/UserProfile`, { state: { user: user } }) }}
                 src={user.image}
-                sx={{
-                    width: 70,  // Set the width to your desired size
-                    height: 70,  // Set the height to your desired size
-                    position: 'absolute',
-                    top: 30,  // Adjust the top position for padding from the top
-                    right: 30,  // Adjust the right position for padding from the right
-                    cursor: 'pointer',
-                }}
             />
             <Container sx={{ paddingTop: 5 }}>
                 <FormControl>
@@ -66,11 +59,11 @@ const Home: FC = ({ }) => {
                                 }}
                                 defaultValue='date'
                             >
-                                <FormControlLabel value="all" control={<Radio />} label="All" />
-                                <FormControlLabel value="date" control={<Radio />} label="Newest" />
-                                <FormControlLabel value="likes" control={<Radio />} label="Most Popular" />
-                                <FormControlLabel value="newFollowing" control={<Radio />} label="Newest from your folowing" />
-                                <FormControlLabel value="popularFollowing" control={<Radio />} label="Most Popular from your folowing" />
+                                <FormControlLabel value="all" control={<OrangeRadio />} label="All" />
+                                <FormControlLabel value="date" control={<OrangeRadio />} label="Newest" />
+                                <FormControlLabel value="likes" control={<OrangeRadio />} label="Most Popular" />
+                                <FormControlLabel value="newFollowing" control={<OrangeRadio />} label="Newest from your folowing" />
+                                <FormControlLabel value="popularFollowing" control={<OrangeRadio />} label="Most Popular from your folowing" />
                             </RadioGroup>
                         </Grid>
                         <Grid item xs={3}>
@@ -87,10 +80,10 @@ const Home: FC = ({ }) => {
                 {isLoading && <p>Loading...</p>}
                 {error && <p>Error: {error.message}</p>}
                 {!isLoading && !error && (
-                    <List sx={{ width: '100%', maxWidth: 1000, bgcolor: 'background.paper' }}>
+                    <HomeList>
                         <h2>Tweets: </h2>
                         {map(renderTweet, data)}
-                    </List>
+                    </HomeList>
                 )}
 
             </Container>
